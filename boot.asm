@@ -24,29 +24,12 @@ clear_screen:
     loop clear_screen
     mov esi, msg
     mov bl, 0x01
-    call print_string
-print_string:
-    mov edi, 0xb8000
-.loop:
-    cmp bl, 0x10
-    je .reset
-    mov al, [esi]
-    or al, al
-    jz .done
-    mov [edi], al
-    mov byte [edi+1], bl
-    add bl, 0x01   
-    add esi, 1
-    add edi, 2
-    jmp .loop
-.reset:
-    mov bl, 0x01
-    jmp .loop
-.done:
-    ret
+    call kernel_main
+    jmp $       
+
 hang:
     jmp hang
-msg: db "That's GIORGIO2.0!", 0
+
 gdt_start:
     dq 0x0
 gdt_code:
