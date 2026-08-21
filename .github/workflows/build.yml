@@ -31,7 +31,7 @@ jobs:
 
     - name: Test di avvio con QEMU
       run: |
-        # Avvia QEMU in modalità test: se il kernel non crasha entro 5 secondi, è un successo!
-        timeout 5s qemu-system-i386 -drive format=raw,file=kernel.bin || [ $? -eq 124 ]
+        timeout 5s qemu-system-i386 -drive format=raw,file=kernel.bin -display none -serial stdio
+        
         
       
