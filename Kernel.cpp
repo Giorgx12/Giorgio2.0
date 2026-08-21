@@ -52,9 +52,9 @@ void stampa_lettera(char lettera, int colore){
             break;
     }
 extern "C" void kernel_main() {
-    stampa_lettera('A', 7); // Dovrebbe stampare una 'A' sullo schermo!
+    stampa_lettera('A', 7); 
     
     while(1) {
-        // Ciclo infinito per impedire al kernel di spegnersi o crashare
+    
     }
 }    
