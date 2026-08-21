@@ -1,0 +1,28 @@
+name: Compila Kernel
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Scarica il codice del repository
+      uses: actions/checkout@v4
+
+    - name: Installa gli strumenti necessari (NASM e GCC)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y nasm build-essential
+
+    - name: Compila il bootloader in Assembly
+      run: nasm -f bin boot.asm -o boot.bin
+
+    - name: Compila il kernel in C++ (freestanding)
+      run: |
+        g++ -ffreestanding -m32 -c kernel.cpp -o kernel.o
+        # Se hai un linker script, puoi aggiungere qui il comando per unire tutto
+        
+    - name: Mostra che i file sono stati creati
+      run: ls -la
+      
