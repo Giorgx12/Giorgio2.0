@@ -23,8 +23,6 @@ clear_screen:
     mov [edi], ax
     add edi, 2
     loop clear_screen
-    mov esi, msg
-    mov bl, 0x01
     call kernel_main
     jmp $       
 
