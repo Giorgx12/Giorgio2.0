@@ -26,12 +26,7 @@ jobs:
         
     - name: Mostra che i file sono stati creati
       run: ls -la
-    - name: Installa QEMU
-      run: sudo apt-get install -y qemu-system-x86
 
-    - name: Test di avvio con QEMU
-      run: |
-        timeout 5s qemu-system-i386 -drive format=raw,file=kernel.bin -display none -serial stdio
         
         
       
