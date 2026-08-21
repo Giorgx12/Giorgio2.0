@@ -51,6 +51,7 @@ void stampa_lettera(char lettera, int colore){
             memoria_video[1] = 0x0f;
             break;
     }
+}
 extern "C" void kernel_main() {
     stampa_lettera('A', 7); 
     
