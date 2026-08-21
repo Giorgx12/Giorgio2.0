@@ -1,9 +1,63 @@
-[org 0x7c00]
+org 0x7c00
+[BITS 16]
 start:
-mov ah, 0x0E
-mov al, 'A'
-int 0x10
-infinite_loop:
-jmp infinite_loop
-times 510-($-$$) db 0
-dw 0xAA55
+    cli
+    lgdt [gdt_descriptor]
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
+    jmp 0x08:protected_mode_start
+[BITS 32]
+protected_mode_start:
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov edi, 0xb8000
+    mov ecx, 2000
+    mov ax, 0x0720   
+clear_screen:
+    mov [edi], ax
+    add edi, 2
+    loop clear_screen
+    mov esi, msg
+    mov bl, 0x01
+    call print_string
+print_string:
+    mov edi, 0xb8000
+.loop:
+    cmp bl, 0x10
+    je .reset
+    mov al, [esi]
+    or al, al
+    jz .done
+    mov [edi], al
+    mov byte [edi+1], bl
+    add bl, 0x01   
+    add esi, 1
+    add edi, 2
+    jmp .loop
+.reset:
+    mov bl, 0x01
+    jmp .loop
+.done:
+    ret
+hang:
+    jmp hang
+msg: db "That's GIORGIO2.0!", 0
+gdt_start:
+    dq 0x0
+gdt_code:
+    dw 0xffff, 0x0000
+    db 0x00, 10011010b, 11001111b, 0x00
+gdt_data:
+    dw 0xffff, 0x0000
+    db 0x00, 10010010b, 11001111b, 0x00
+gdt_end:
+gdt_descriptor:
+    dw gdt_end - gdt_start - 1
+    dd gdt_start
+times 510 - ($ - $$) db 0
+dw 0xaa55
