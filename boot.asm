@@ -1,5 +1,7 @@
 org 0x7c00
 [BITS 16]
+section .text
+global start  
 extern kernel_main
 start:
     cli
