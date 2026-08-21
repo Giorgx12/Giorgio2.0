@@ -1,5 +1,6 @@
 org 0x7c00
 [BITS 16]
+extern kernel_main
 start:
     cli
     lgdt [gdt_descriptor]
