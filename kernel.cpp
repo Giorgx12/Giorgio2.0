@@ -56,9 +56,18 @@ void stampa_lettera(char lettera, int colore){
         case (15):
             memoria_video[cursore_colore] = 0x0f;
             break;
-        
     }
-    cursore++;
+    cursore ++;
+    if (cursore >= 80 * 25) {
+        for (int i = 0; i < 24 * 160; i++){
+            memoria_video[i] = memoria_video[i+160];
+        }
+        for (int i = 24 * 160; i < 25 * 160 - 1; i += 2){
+            memoria_video[i] = ' ';
+            memoria_video[i + 1] = 0x07;
+        }
+        cursore = 24 * 80;
+    }
 }
 void stampa_stringa(const char* stringa, int colore){
     for (char car : stringa){
