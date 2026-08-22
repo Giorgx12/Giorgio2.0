@@ -70,8 +70,9 @@ void stampa_lettera(char lettera, int colore){
     }
 }
 void stampa_stringa(const char* stringa, int colore){
-    for (char car : stringa){
-        stampa_lettera(car, colore);
+    while (*string){
+        stampa_lettera(*stringa, colore);
+        stringa++;
     }
 }
 
