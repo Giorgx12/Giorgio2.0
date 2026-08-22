@@ -1,59 +1,73 @@
+int cursore = 0;
 void stampa_lettera(char lettera, int colore){
+    if (lettera == '\n'){
+        cursore += 80;
+        return;
+    }
     char* memoria_video = (char*) 0xb8000;
-    memoria_video[0] = lettera;
+    memoria_video[cursore * 2] = lettera;
+    int cursore_colore = cursore * 2 + 1; 
     switch(colore){
         case (0):
-            memoria_video[1] = 0x00;
+            memoria_video[cursore_colore] = 0x00;
             break;
         case (1):
-            memoria_video[1] = 0x01;
+            memoria_video[cursore_colore] = 0x01;
             break;
         case (2):
-            memoria_video[1] = 0x02;
+            memoria_video[cursore_colore] = 0x02;
             break;
         case (3):
-            memoria_video[1] = 0x03;
+            memoria_video[cursore_colore] = 0x03;
             break;
         case (4): 
-            memoria_video[1] = 0x04;
+            memoria_video[cursore_colore] = 0x04;
             break;
         case (5): 
-            memoria_video[1] = 0x05;
+            memoria_video[cursore_colore] = 0x05;
             break;
         case (6): 
-            memoria_video[1] = 0x06;
+            memoria_video[cursore_colore] = 0x06;
             break;
         case (7): 
-            memoria_video[1] = 0x07;
+            memoria_video[cursore_colore] = 0x07;
             break;
         case (8): 
-            memoria_video[1] = 0x08;
+            memoria_video[cursore_colore] = 0x08;
             break;
         case (9): 
-            memoria_video[1] = 0x09;
+            memoria_video[cursore_colore] = 0x09;
             break;
         case (10):
-            memoria_video[1] = 0x0a;
+            memoria_video[cursore_colore] = 0x0a;
             break;
         case (11): 
-            memoria_video[1] = 0x0b;
+            memoria_video[cursore_colore] = 0x0b;
             break;
         case (12): 
-            memoria_video[1] = 0x0c;
+            memoria_video[cursore_colore] = 0x0c;
             break;
         case (13):
-            memoria_video[1] = 0x0d;
+            memoria_video[cursore_colore] = 0x0d;
             break;
         case (14): 
-            memoria_video[1] = 0x0e;
+            memoria_video[cursore_colore] = 0x0e;
             break;
         case (15):
-            memoria_video[1] = 0x0f;
+            memoria_video[cursore_colore] = 0x0f;
             break;
+        
+    }
+    cursore++;
+}
+void stampa_stringa(const char* stringa, int colore){
+    for (char car : stringa){
+        stampa_lettera(car, colore);
     }
 }
+
 extern "C" void kernel_main() {
-    stampa_lettera('A', 7); 
+    stampa_stringa("That's Giorgio2.0", 7); 
     
     while(1) {
     
