@@ -69,13 +69,20 @@ void stampa_lettera(char lettera, int colore){
         cursore = 24 * 80;
     }
 }
+void aggiorna_cursore_hardware(int posizione){
+    unisgned char parte_bassa = posizione & 0xFF
+    unsigned char parte_alta = posizione >> 8;
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, parte_bassa);
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, parte_alta);
 void stampa_stringa(const char* stringa, int colore){
     while (*stringa){
         stampa_lettera(*stringa, colore);
         stringa++;
     }
 }
-
+extern "C" void outb(unsigned short porta, unsigned char valore);
 extern "C" void kernel_main() {
     stampa_stringa("That's Giorgio2.0", 7); 
     
