@@ -138,6 +138,7 @@ void stampa_stringa(const char* stringa, int colore){
     }
 }
 extern "C" void kernel_main() {
+    inizializza_scancode();
     stampa_stringa("That's Giorgio2.0", 7); 
     
     while(1) {
