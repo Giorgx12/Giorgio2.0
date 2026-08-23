@@ -51,8 +51,6 @@ void inizializza_tabella(){
     tabella_scancode[0x1C] = '\n';  
     tabella_scancode[0x0E] = '\b'; 
 }
-
-
 char* memoria_video = (char*)0xb8000;
 void stampa_lettera(char lettera, int colore){
     if (lettera == '\n'){
@@ -128,7 +126,7 @@ void stampa_lettera(char lettera, int colore){
 void leggi_tastiera() {
     unsigned char sc = inb(0x60);
     if (sc != 0) {
-        stampa_lettera(tabella_tastiera[sc], 7);
+        stampa_lettera(tabella_scancode[sc], 7);
     }
 }
 void stampa_stringa(const char* stringa, int colore){
