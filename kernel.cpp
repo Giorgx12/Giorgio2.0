@@ -68,6 +68,7 @@ void stampa_lettera(char lettera, int colore){
         }
         cursore = 24 * 80;
     }
+    aggiorna_cursore_hardware(cursore);
 }
 extern "C" void outb(unsigned short porta, unsigned char valore){}
 void aggiorna_cursore_hardware(int posizione){
