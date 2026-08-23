@@ -1,7 +1,6 @@
 [BITS 16]
 section .text
 global start  
-extern kernel_main
 start:
     cli
     lgdt [gdt_descriptor]
@@ -24,7 +23,7 @@ clear_screen:
     mov [edi], ax
     add edi, 2
     loop clear_screen
-    call kernel_main
+    jmp 0x1000
     jmp $       
 
 hang:
