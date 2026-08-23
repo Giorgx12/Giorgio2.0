@@ -70,7 +70,7 @@ void stampa_lettera(char lettera, int colore){
     }
 }
 void aggiorna_cursore_hardware(int posizione){
-    unisgned char parte_bassa = posizione & 0xFF
+    unsigned char parte_bassa = posizione & 0xFF
     unsigned char parte_alta = posizione >> 8;
     outb(0x3D4, 0x0F);
     outb(0x3D5, parte_bassa);
