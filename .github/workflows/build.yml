@@ -16,13 +16,13 @@ jobs:
         sudo apt-get install -y nasm build-essential
 
     - name: Compila il bootloader in file oggetto
-      run: nasm -f elf32 boot.asm -o boot.o
+      run: nasm -f elf32 boot.asm porte.asm -o boot.o porte.o
 
     - name: Compila il kernel in C++ (freestanding)
       run: g++ -m32 -ffreestanding -fno-pie -c kernel.cpp -o kernel.o
 
     - name: Unisci tutto con il Linker
-      run: ld -m elf_i386 -Tlinker.ld -o kernel.bin boot.o kernel.o
+      run: ld -m elf_i386 -Tlinker.ld -o kernel.bin boot.o porte.o kernel.o
         
     - name: Mostra che i file sono stati creati
       run: ls -la
