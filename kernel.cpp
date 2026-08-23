@@ -1,10 +1,11 @@
 int cursore = 0;
+char* memoria_video = (char*)0xb8000;
 void stampa_lettera(char lettera, int colore){
     if (lettera == '\n'){
         cursore += 80;
+        aggiorna_cursore_hardware(cursore);
         return;
     }
-    char* memoria_video = (char*) 0xb8000;
     memoria_video[cursore * 2] = lettera;
     int cursore_colore = cursore * 2 + 1; 
     switch(colore){
@@ -70,7 +71,7 @@ void stampa_lettera(char lettera, int colore){
     }
     aggiorna_cursore_hardware(cursore);
 }
-extern "C" void outb(unsigned short porta, unsigned char valore){}
+extern "C" void outb(unsigned short porta, unsigned char valore);
 void aggiorna_cursore_hardware(int posizione){
     unsigned char parte_bassa = posizione & 0xFF;
     unsigned char parte_alta = posizione >> 8;
