@@ -1,5 +1,6 @@
 int cursore = 0;
 extern "C" void outb(unsigned short porta, unsigned char valore);
+extern "C" unsigned char inb(unsigned short porta);
 void aggiorna_cursore_hardware(int posizione){
     unsigned char parte_bassa = posizione & 0xFF;
     unsigned char parte_alta = posizione >> 8;
@@ -8,6 +9,56 @@ void aggiorna_cursore_hardware(int posizione){
     outb(0x3D4, 0x0E);
     outb(0x3D5, parte_alta);
 }
+void inizializza_tabella(){
+    tabella_scancode[0x1E] = 'a';
+tabella_scancode[0x30] = 'b';
+tabella_scancode[0x2E] = 'c';
+tabella_scancode[0x20] = 'd';
+tabella_scancode[0x12] = 'e';
+tabella_scancode[0x21] = 'f';
+tabella_scancode[0x22] = 'g';
+tabella_scancode[0x23] = 'h';
+tabella_scancode[0x17] = 'i';
+tabella_scancode[0x24] = 'j';
+tabella_scancode[0x25] = 'k';
+tabella_scancode[0x26] = 'l';
+tabella_scancode[0x32] = 'm';
+tabella_scancode[0x31] = 'n';
+tabella_scancode[0x18] = 'o';
+tabella_scancode[0x19] = 'p';
+tabella_scancode[0x10] = 'q';
+tabella_scancode[0x13] = 'r';
+tabella_scancode[0x1F] = 's';
+tabella_scancode[0x14] = 't';
+tabella_scancode[0x16] = 'u';
+tabella_scancode[0x2F] = 'v';
+tabella_scancode[0x11] = 'w';
+tabella_scancode[0x2D] = 'x';
+tabella_scancode[0x15] = 'y';
+tabella_scancode[0x2C] = 'z';
+
+tabella_scancode[0x02] = '1';
+tabella_scancode[0x03] = '2';
+tabella_scancode[0x04] = '3';
+tabella_scancode[0x05] = '4';
+tabella_scancode[0x06] = '5';
+tabella_scancode[0x07] = '6';
+tabella_scancode[0x08] = '7';
+tabella_scancode[0x09] = '8';
+tabella_scancode[0x0A] = '9';
+tabella_scancode[0x0B] = '0';
+tabella_scancode[0x39] = ' ';  
+tabella_scancode[0x1C] = '\n';  
+tabella_scancode[0x0E] = '\b'; 
+
+}
+void leggi_tastiera() {
+    unsigned char sc = inb(0x60);
+    if (sc != 0) {
+        
+    }
+}
+
 char* memoria_video = (char*)0xb8000;
 void stampa_lettera(char lettera, int colore){
     if (lettera == '\n'){
@@ -90,6 +141,6 @@ extern "C" void kernel_main() {
     stampa_stringa("That's Giorgio2.0", 7); 
     
     while(1) {
-    
+        leggi_tastiera();
     }
 }    
