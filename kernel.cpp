@@ -1,4 +1,13 @@
 int cursore = 0;
+extern "C" void outb(unsigned short porta, unsigned char valore);
+void aggiorna_cursore_hardware(int posizione){
+    unsigned char parte_bassa = posizione & 0xFF;
+    unsigned char parte_alta = posizione >> 8;
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, parte_bassa);
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, parte_alta);
+}
 char* memoria_video = (char*)0xb8000;
 void stampa_lettera(char lettera, int colore){
     if (lettera == '\n'){
@@ -70,15 +79,6 @@ void stampa_lettera(char lettera, int colore){
         cursore = 24 * 80;
     }
     aggiorna_cursore_hardware(cursore);
-}
-extern "C" void outb(unsigned short porta, unsigned char valore);
-void aggiorna_cursore_hardware(int posizione){
-    unsigned char parte_bassa = posizione & 0xFF;
-    unsigned char parte_alta = posizione >> 8;
-    outb(0x3D4, 0x0F);
-    outb(0x3D5, parte_bassa);
-    outb(0x3D4, 0x0E);
-    outb(0x3D5, parte_alta);
 }
 void stampa_stringa(const char* stringa, int colore){
     while (*stringa){
