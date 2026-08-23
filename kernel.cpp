@@ -82,7 +82,7 @@ void stampa_stringa(const char* stringa, int colore){
         stringa++;
     }
 }
-extern "C" void outb(unsigned short porta, unsigned char valore);
+extern "C" void outb(unsigned short porta, unsigned char valore){}
 extern "C" void kernel_main() {
     stampa_stringa("That's Giorgio2.0", 7); 
     
