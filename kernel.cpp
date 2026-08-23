@@ -30,41 +30,34 @@ void inizializza_tabella(){
     tabella_scancode[0x13] = 'r';
     tabella_scancode[0x1F] = 's';
     tabella_scancode[0x14] = 't';
-tabella_scancode[0x16] = 'u';
-tabella_scancode[0x2F] = 'v';
-tabella_scancode[0x11] = 'w';
-tabella_scancode[0x2D] = 'x';
-tabella_scancode[0x15] = 'y';
-tabella_scancode[0x2C] = 'z';
-
-tabella_scancode[0x02] = '1';
-tabella_scancode[0x03] = '2';
-tabella_scancode[0x04] = '3';
-tabella_scancode[0x05] = '4';
-tabella_scancode[0x06] = '5';
-tabella_scancode[0x07] = '6';
-tabella_scancode[0x08] = '7';
-tabella_scancode[0x09] = '8';
-tabella_scancode[0x0A] = '9';
-tabella_scancode[0x0B] = '0';
-tabella_scancode[0x39] = ' ';  
-tabella_scancode[0x1C] = '\n';  
-tabella_scancode[0x0E] = '\b'; 
-
+    tabella_scancode[0x16] = 'u';
+    tabella_scancode[0x2F] = 'v';
+    tabella_scancode[0x11] = 'w';
+    tabella_scancode[0x2D] = 'x';
+    tabella_scancode[0x15] = 'y';
+    tabella_scancode[0x2C] = 'z';
+    tabella_scancode[0x02] = '1';
+    tabella_scancode[0x03] = '2';
+    tabella_scancode[0x04] = '3';
+    tabella_scancode[0x05] = '4';
+    tabella_scancode[0x06] = '5';
+    tabella_scancode[0x07] = '6';
+    tabella_scancode[0x08] = '7';
+    tabella_scancode[0x09] = '8';
+    tabella_scancode[0x0A] = '9';
+    tabella_scancode[0x0B] = '0';
+    tabella_scancode[0x39] = ' ';  
+    tabella_scancode[0x1C] = '\n';  
+    tabella_scancode[0x0E] = '\b'; 
 }
-void leggi_tastiera() {
-    unsigned char sc = inb(0x60);
-    if (sc != 0) {
-        
-    }
-}
+
 
 char* memoria_video = (char*)0xb8000;
 void stampa_lettera(char lettera, int colore){
     if (lettera == '\n'){
         cursore += 80;
         aggiorna_cursore_hardware(cursore);
-        return;
+      return;
     }
     memoria_video[cursore * 2] = lettera;
     int cursore_colore = cursore * 2 + 1; 
@@ -130,6 +123,12 @@ void stampa_lettera(char lettera, int colore){
         cursore = 24 * 80;
     }
     aggiorna_cursore_hardware(cursore);
+}
+void leggi_tastiera() {
+    unsigned char sc = inb(0x60);
+    if (sc != 0) {
+        stampa_lettera(tabella_tastiera[sc], 7);
+    }
 }
 void stampa_stringa(const char* stringa, int colore){
     while (*stringa){
