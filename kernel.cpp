@@ -1,4 +1,5 @@
 int cursore = 0;
+char tabella_scancode[128];
 extern "C" void outb(unsigned short porta, unsigned char valore);
 extern "C" unsigned char inb(unsigned short porta);
 void aggiorna_cursore_hardware(int posizione){
