@@ -1,7 +1,18 @@
 [BITS 16]
+org 0x7c00
 section .text
 global start  
 start:
+    mov ax, 0x1000
+    mov es, ax
+    mov bx, 0x0000
+    mov ah, 0x02     
+    mov al, 20   
+    mov ch, 0        
+    mov cl, 2       
+    mov dh, 0        
+    mov dl, 0x80     
+    int 0x13
     cli
     lgdt [gdt_descriptor]
     mov eax, cr0
@@ -23,8 +34,7 @@ clear_screen:
     mov [edi], ax
     add edi, 2
     loop clear_screen
-    jmp 0x100000
-    jmp $       
+    jmp 0x00100000
 
 hang:
     jmp hang
