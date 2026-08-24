@@ -36,6 +36,12 @@ jobs:
       
     - name: Mostra che i file sono stati creati
       run: ls -la
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+          name: kernel-bin
+          path: os-image.bin
+    
 
         
         
