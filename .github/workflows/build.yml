@@ -16,7 +16,8 @@ jobs:
         sudo apt-get install -y nasm build-essential
 
     - name: Compila il bootloader in file oggetto
-      run: nasm -f elf32 boot.asm -o boot.o
+      run: nasm -f bin boot.asm -o boot.bin
+      
 
     - name: Compila le porte in file oggetto
       run: nasm -f elf32 porte.asm -o porte.o
