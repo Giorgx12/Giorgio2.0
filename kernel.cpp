@@ -5,6 +5,7 @@ extern "C" void isr20_stub();
 extern "C" void isr21_stub();
 extern "C" void outb(unsigned short porta, unsigned char valore);
 extern "C" unsigned char inb(unsigned short porta);
+extern "C" void lidt(void* addr);
 struct IDTEntry {
     uint16_t offset_low;
     uint16_t selector;
