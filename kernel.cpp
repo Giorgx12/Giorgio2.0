@@ -33,6 +33,7 @@ void init_idt(){
     descrittore.base = (uint32_t)&idt;
     lidt(&descrittore);
 }
+sti
 int cursore = 0;
 char tabella_scancode[128];
 void aggiorna_cursore_hardware(int posizione){
