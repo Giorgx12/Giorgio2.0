@@ -23,9 +23,10 @@ void set_idt_entry(int numero, uint32_t indirizzo_stub){
 void init_idt(){
     set_idt_entry(0x20, (uint32_t)&isr20_stub);
     set_idt_entry(0x21, (uint32_t)&isr21_stub);
-    uint16_t limit;
-    uint32_t base;
-    struct idt{}
+    struct idt{
+        uint16_t limit;
+        uint32_t base;
+    }
      
 }
 
