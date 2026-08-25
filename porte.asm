@@ -56,3 +56,7 @@ pic_remap:
     call outb
     add esp, 8
     ret
+global lidt
+lidt:
+    lidt [esp+4]
+    ret
