@@ -23,13 +23,15 @@ void set_idt_entry(int numero, uint32_t indirizzo_stub){
 void init_idt(){
     set_idt_entry(0x20, (uint32_t)&isr20_stub);
     set_idt_entry(0x21, (uint32_t)&isr21_stub);
-    struct idt{
+    struct descrittore_idt{
         uint16_t limit;
         uint32_t base;
-    }
-     
+    } __attribute__((packed));
+    descrittore_idt descrittore;
+    descrittore.limit = 0x07FF;
+    descrittore.base = (uint32_t)&idt;
+    lidt(&descrittore);
 }
-
 int cursore = 0;
 char tabella_scancode[128];
 void aggiorna_cursore_hardware(int posizione){
