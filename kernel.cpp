@@ -1,7 +1,36 @@
-int cursore = 0;
-char tabella_scancode[128];
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+extern "C" void isr20_stub();
+extern "C" void isr21_stub();
 extern "C" void outb(unsigned short porta, unsigned char valore);
 extern "C" unsigned char inb(unsigned short porta);
+struct IDTEntry {
+    uint16_t offset_low;
+    uint16_t selector;
+    uint8_t zero;
+    uint8_t type_attr;
+    uint16_t offset_high;
+};
+IDTEntry idt[256];
+void set_idt_entry(int numero, uint32_t indirizzo_stub){
+    idt[numero].offset_low = indirizzo_stub & 0xFFFF;
+    idt[numero].selector = 0x08;
+    idt[numero].zero = 0;
+    idt[numero].type_attr = 0x8E;
+    idt[numero].offset_high = indirizzo_stub >> 16;
+}
+void init_idt(){
+    set_idt_entry(0x20, (uint32_t)&isr20_stub);
+    set_idt_entry(0x21, (uint32_t)&isr21_stub);
+    uint16_t limit;
+    uint32_t base;
+    struct idt{}
+     
+}
+
+int cursore = 0;
+char tabella_scancode[128];
 void aggiorna_cursore_hardware(int posizione){
     unsigned char parte_bassa = posizione & 0xFF;
     unsigned char parte_alta = posizione >> 8;
