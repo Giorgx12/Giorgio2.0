@@ -1,7 +1,7 @@
-mov PIC1_COMMAND, 0x20
-mov PIC1_DATA, 0x21
-mov PCI2_COMMAND, 0xA0
-mov PCI2_DATA, 0xA1
+PIC1_COMMAND equ 0x20
+PIC1_DATA equ 0x21
+PCI2_COMMAND equ 0xA0
+PCI2_DATA equ 0xA1
 global outb
 outb:
     mov dx, word [esp + 4]
@@ -15,14 +15,44 @@ inb:
     ret
 global pic_remap
 pic_remap:
-    outb(PCI1_COMMAND, 0x11)
-    outb(PCI2_COMMAND, 0x11)
-    outb(PCI1_DATA, 0x20)
-    outb(PCI2_DATA, 0x28)
-    outb(PCI1_DATA, 0x04)
-    outb(PCI2_DATA, 0x02)
-    outb(PCI1_DATA, 0x01)
-    outb(PCI2_DATA, 0x01)
-    outb(PCI1_DATA, 0xFC)
-    outb(PCI2_DATA, 0xFF)
+    push 0x11
+    push PIC1_COMMAND
+    call outb
+    add esp, 8
+    push 0x11
+    push PIC2_COMMAND
+    call outb
+    add esp, 8
+    push 0x20
+    push PIC1_DATA
+    call outb
+    add esp, 8
+    push 0x28
+    push PIC2_DATA
+    call outb
+    add esp, 8
+    push 0x04
+    push PIC1_DATA
+    call outb
+    add esp, 8
+    push 0x02
+    push PIC2_DATA
+    call outb
+    add esp, 8
+    push 0x01
+    push PIC1_DATA
+    call outb
+    add esp, 8
+    push 0x01
+    push PIC2_DATA
+    call outb
+    add esp, 8
+    push 0xFC
+    push PIC1_DATA
+    call outb
+    add esp, 8
+    push 0xFF
+    push PIC2_DATA
+    call outb
+    add esp, 8
     ret
