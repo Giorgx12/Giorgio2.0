@@ -1,7 +1,7 @@
 PIC1_COMMAND equ 0x20
 PIC1_DATA equ 0x21
-PCI2_COMMAND equ 0xA0
-PCI2_DATA equ 0xA1
+PIC2_COMMAND equ 0xA0
+PIC2_DATA equ 0xA1
 global outb
 outb:
     mov dx, word [esp + 4]
