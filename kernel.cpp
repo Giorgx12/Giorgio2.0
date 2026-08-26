@@ -1,11 +1,11 @@
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
-extern "C" void isr20_stub();
-extern "C" void isr21_stub();
+/* extern "C" void isr20_stub();
+extern "C" void isr21_stub();*/
 extern "C" void outb(unsigned short porta, unsigned char valore);
 extern "C" unsigned char inb(unsigned short porta);
-extern "C" void lidt(void* addr);
+/* extern "C" void lidt(void* addr);
 struct IDTEntry {
     uint16_t offset_low;
     uint16_t selector;
@@ -33,7 +33,7 @@ void init_idt(){
     descrittore.base = (uint32_t)&idt;
     lidt(&descrittore);
 }
-sti
+sti */
 int cursore = 0;
 char tabella_scancode[128];
 void aggiorna_cursore_hardware(int posizione){
