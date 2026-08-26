@@ -11,7 +11,7 @@ start:
     mov ch, 0        
     mov cl, 2       
     mov dh, 0        
-    mov dl, 0x80     
+    mov dl, 0x00     
     int 0x13
     cli
     lgdt [gdt_descriptor]
