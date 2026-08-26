@@ -52,5 +52,11 @@ gdt_end:
 gdt_descriptor:
     dw gdt_end - gdt_start - 1
     dd gdt_start
+disk_error:
+    mov edi, 0xb8000
+    mov eax, 0x4F45      ; 'E' rosso
+    mov [edi], eax
+    jmp disk_error
+
 times 510 - ($ - $$) db 0
 dw 0xaa55
