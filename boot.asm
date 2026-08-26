@@ -13,6 +13,7 @@ start:
     mov dh, 0        
     mov dl, 0x00     
     int 0x13
+    jc disk_error
     cli
     lgdt [gdt_descriptor]
     mov eax, cr0
