@@ -34,7 +34,7 @@ clear_screen:
     mov [edi], ax
     add edi, 2
     loop clear_screen
-    jmp 0x000100000
+    jmp 0x00010000
 
 hang:
     jmp hang
