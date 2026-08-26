@@ -169,11 +169,17 @@ void stampa_stringa(const char* stringa, int colore){
         stringa++;
     }
 }
-extern "C" void kernel_main() {
+/*extern "C" void kernel_main() {
     inizializza_tabella();
     stampa_stringa("That's Giorgio2.0", 7); 
     
     while(1) {
         leggi_tastiera();
     }
-}    
+}   */ 
+extern "C" void kernel_main() {
+    char* vga = (char*)0xb8000;
+    vga[0] = 'K';
+    vga[1] = 0x0F;
+    while (1) {}
+}
