@@ -3,6 +3,8 @@ org 0x7c00
 section .text
 global start  
 start:
+    mov byte [0xb8000], 'B'
+    mov byte [0xb8001], 0x0F
     mov ax, 0x1000
     mov es, ax
     mov bx, 0x0000
@@ -21,7 +23,6 @@ start:
     mov cr0, eax
     jmp 0x08:protected_mode_start
 [BITS 32]
-[BITS 32]
 protected_mode_start:
     mov ax, 0x10
     mov ds, ax
@@ -29,7 +30,6 @@ protected_mode_start:
     mov fs, ax
     mov gs, ax
     mov ss, ax
-
     mov edi, 0xb8000
     mov ecx, 2000
     mov ax, 0x0720
