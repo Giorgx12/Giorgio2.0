@@ -3,15 +3,17 @@ org 0x7c00
 section .text
 global start  
 start:
+    mov byte [0xb8000], 'B'
+    mov byte [0xb8001], 0x0F
     mov ax, 0x1000
     mov es, ax
     mov bx, 0x0000
-    mov ah, 0x02     
-    mov al, 20   
-    mov ch, 0        
-    mov cl, 2       
-    mov dh, 0        
-    mov dl, 0x00     
+    mov ah, 0x02
+    mov al, 32
+    mov ch, 0
+    mov cl, 1
+    mov dh, 0
+    mov dl, 0x00
     int 0x13
     jc disk_error
     cli
@@ -37,12 +39,10 @@ clear_screen:
     loop clear_screen
     mov byte [0xb8000], 'B'
     mov byte [0xb8001], 0x0F
-    mov eax, 0x00010000 
+    mov eax, 0x00010000
     jmp eax     
-
 hang:
     jmp hang
-
 gdt_start:
     dq 0x0
 gdt_code:
@@ -57,9 +57,8 @@ gdt_descriptor:
     dd gdt_start
 disk_error:
     mov edi, 0xb8000
-    mov eax, 0x4F45      ; 'E' rosso
+    mov eax, 0x4F45
     mov [edi], eax
     jmp disk_error
-
 times 510 - ($ - $$) db 0
 dw 0xaa55
