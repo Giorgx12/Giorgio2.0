@@ -10,7 +10,7 @@ start:
     mov es, ax
     mov bx, 0x0000
     mov ah, 0x02
-    mov al, 32
+    mov al, 1
     mov ch, 0
     mov cl, 1
     mov dh, 0
@@ -42,11 +42,7 @@ clear_screen:
     add edi, 2
     loop clear_screen
 
-    mov byte [0xb8000], 'B'
-    mov byte [0xb8001], 0x0F
-
-    mov eax, 0x00010000
-    jmp eax
+    mov dword [0xb8000], 0x0F004100
 
 hang:
     jmp hang
