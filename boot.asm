@@ -42,7 +42,8 @@ clear_screen:
     add edi, 2
     loop clear_screen
 
-    mov dword [0xb8000], 0x0F004100
+    mov byte [0xb8000], 'A'
+    mov byte [0xb8001], 0x0F
 
 hang:
     jmp hang
