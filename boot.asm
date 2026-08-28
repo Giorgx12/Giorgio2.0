@@ -3,8 +3,7 @@ org 0x7c00
 section .text
 global start
 start:
-    mov ax, 0x0003
-    int 0x10
+
 
     mov ax, 0x1000
     mov es, ax
@@ -27,6 +26,8 @@ start:
 
 [BITS 32]
 protected_mode_start:
+    mov ax, 0x0003
+    int 0x10
     mov ax, 0x10
     mov ds, ax
     mov es, ax
