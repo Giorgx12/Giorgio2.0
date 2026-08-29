@@ -2,27 +2,29 @@ ENTRY(kernel_main)
 
 SECTIONS
 {
-
     . = 0x00010000;
 
-    .text :
-    {
+    .text : {
         *(.text*)
     }
 
-    .rodata :
-    {
+    .rodata : {
         *(.rodata*)
     }
 
-    .data :
-    {
+    .data : {
         *(.data*)
     }
 
-    .bss :
-    {
+    .bss : {
         *(.bss*)
         *(COMMON)
+    }
+
+    /DISCARD/ : {
+        *(.eh_frame*)
+        *(.comment*)
+        *(.note*)
+        *(.note.GNU-stack*)
     }
 }
