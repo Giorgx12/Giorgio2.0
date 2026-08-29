@@ -3,13 +3,11 @@ org 0x7c00
 section .text
 global start
 start:
-
-
     mov ax, 0x1000
     mov es, ax
     mov bx, 0x0000
     mov ah, 0x02
-    mov al, 1
+    mov al, 32
     mov ch, 0
     mov cl, 1
     mov dh, 0
@@ -22,12 +20,10 @@ start:
     mov eax, cr0
     or eax, 1
     mov cr0, eax
-    jmp 0x08:protected_mode_start
+    jmp 0x08:pm
 
 [BITS 32]
-protected_mode_start:
-    mov ax, 0x0003
-    int 0x10
+pm:
     mov ax, 0x10
     mov ds, ax
     mov es, ax
@@ -38,29 +34,16 @@ protected_mode_start:
     mov edi, 0xb8000
     mov ecx, 2000
     mov ax, 0x0720
-clear_screen:
+cls:
     mov [edi], ax
     add edi, 2
-    loop clear_screen
+    loop cls
 
-    mov byte [0xb8000], 'A'
+    mov byte [0xb8000], 'B'
     mov byte [0xb8001], 0x0F
 
-hang:
-    jmp hang
-
-gdt_start:
-    dq 0x0
-gdt_code:
-    dw 0xffff, 0x0000
-    db 0x00, 10011010b, 11001111b, 0x00
-gdt_data:
-    dw 0xffff, 0x0000
-    db 0x00, 10010010b, 11001111b, 0x00
-gdt_end:
-gdt_descriptor:
-    dw gdt_end - gdt_start - 1
-    dd gdt_start
+    mov eax, 0x00010000
+    jmp eax
 
 disk_error:
     mov ax, 0xb800
@@ -69,6 +52,19 @@ disk_error:
     mov byte [0], 'E'
     mov byte [1], 0x0C
     jmp disk_error
+
+gdt_start:
+    dq 0
+gdt_code:
+    dw 0xffff, 0
+    db 0, 10011010b, 11001111b, 0
+gdt_data:
+    dw 0xffff, 0
+    db 0, 10010010b, 11001111b, 0
+gdt_end:
+gdt_descriptor:
+    dw gdt_end - gdt_start - 1
+    dd gdt_start
 
 times 510 - ($ - $$) db 0
 dw 0xaa55
