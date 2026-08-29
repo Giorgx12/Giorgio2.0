@@ -7,42 +7,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Scarica il codice del repository
+    - name: Scarica il repository
       uses: actions/checkout@v4
 
-    - name: Installa gli strumenti necessari (NASM e GCC)
+    - name: Installa NASM e GCC
       run: |
         sudo apt-get update
-        sudo apt-get install -y nasm build-essential
+        sudo apt-get install -y nasm build-essential gcc-multilib
 
-    - name: Compila il bootloader in file oggetto
+    - name: Compila bootloader
       run: nasm -f bin boot.asm -o boot.bin
-      
 
-    - name: Compila le porte in file oggetto
+    - name: Compila porte.asm
       run: nasm -f elf32 porte.asm -o porte.o
 
-    - name: Compila il kernel in C++ (freestanding)
+    - name: Compila kernel
       run: g++ -m32 -ffreestanding -fno-pie -c kernel.cpp -o kernel.o
 
-    - name: Unisci tutto con il Linker
+    - name: Linka kernel
       run: ld -m elf_i386 -T linker.ld -o kernel.elf porte.o kernel.o
 
-    - name: Converti in binario
+    - name: Converti kernel in binario
       run: objcopy -O binary kernel.elf kernel.bin
-      
-    - name: Unione finale
+
+    - name: Crea immagine finale
       run: cat boot.bin kernel.bin > os-image.bin
-      
-    - name: Mostra che i file sono stati creati
+
+    - name: Mostra dimensioni
       run: ls -la
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-          name: kernel-bin
-          path: os-image.bin
-    
-
-        
-        
-      
+        name: kernel-bin
+        path: os-image.bin
