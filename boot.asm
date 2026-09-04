@@ -15,6 +15,8 @@ start:
     mov dh, 0
     mov dl, 0x00
     int 0x13
+    mov es, 0x1000
+    mov byte [es:0], 0xAB
     jc disk_error
     cli
     lgdt [gdt_descriptor]
@@ -40,6 +42,13 @@ clear_screen:
     mov byte [0xb8000], 'B'
     mov byte [0xb8001], 0x0f
     jmp 0x08:0x00010000
+    mov al, byte [0x00010000]
+    cmp al, 0xAB
+    je kernel_is_here
+    mov byte [0xb8000], 'N'  
+    jmp hang
+kernel_is_here:
+    mov byte [0xb8000], 'Y'  
 hang:
     jmp hang
 gdt_start:
