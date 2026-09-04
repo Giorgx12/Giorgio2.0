@@ -1,7 +1,7 @@
 [BITS 16]
 org 0x7c00
 section .text
-global start  
+global start
 start:
     mov byte [0xb8000], 'B'
     mov byte [0xb8001], 0x0F
@@ -40,15 +40,27 @@ clear_screen:
     add edi, 2
     loop clear_screen
     mov byte [0xb8000], 'B'
-    mov byte [0xb8001], 0x0f 
+    mov byte [0xb8001], 0x0f
     mov al, byte [0x00010000]
     cmp al, 0xAB
-    je kernel_is_here
-    mov byte [0xb8000], 'N'  
+    je found_10000
+    mov al, byte [0x00008000]
+    cmp al, 0xAB
+    je found_8000
+    mov al, byte [0x00007C00]
+    cmp al, 0xAB
+    je found_7c00
+    mov byte [0xb8000], 'N'
     jmp hang
-kernel_is_here:
-    mov byte [0xb8000], 'Y'  
-    jmp 0x08:0x00010000
+found_10000:
+    mov byte [0xb8000], '1'
+    jmp hang
+found_8000:
+    mov byte [0xb8000], '8'
+    jmp hang
+found_7c00:
+    mov byte [0xb8000], 'S'
+    jmp hang
 hang:
     jmp hang
 gdt_start:
