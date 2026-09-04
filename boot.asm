@@ -38,24 +38,11 @@ clear_screen:
     loop clear_screen
     mov al, byte [0x00010000]
     cmp al, 0xAB
-    je found_10000
-    mov al, byte [0x00008000]
-    cmp al, 0xAB
-    je found_8000
-    mov al, byte [0x00007C00]
-    cmp al, 0xAB
-    je found_7c00
+    je kernel_here
     mov byte [0xb8000], 'N'
     jmp hang
-found_10000:
-    mov byte [0xb8000], '1'
-    jmp hang
-found_8000:
-    mov byte [0xb8000], '8'
-    jmp hang
-found_7c00:
-    mov byte [0xb8000], 'S'
-    jmp hang
+kernel_here:
+    jmp 0x08:0x00010000
 hang:
     jmp hang
 gdt_start:
