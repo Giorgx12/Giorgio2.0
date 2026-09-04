@@ -40,8 +40,7 @@ clear_screen:
     add edi, 2
     loop clear_screen
     mov byte [0xb8000], 'B'
-    mov byte [0xb8001], 0x0f
-    jmp 0x08:0x00010000
+    mov byte [0xb8001], 0x0f 
     mov al, byte [0x00010000]
     cmp al, 0xAB
     je kernel_is_here
@@ -49,6 +48,7 @@ clear_screen:
     jmp hang
 kernel_is_here:
     mov byte [0xb8000], 'Y'  
+    jmp 0x08:0x00010000
 hang:
     jmp hang
 gdt_start:
