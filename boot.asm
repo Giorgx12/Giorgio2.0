@@ -58,10 +58,3 @@ gdt_descriptor:
     dd gdt_start
 times 510 - ($ - $$) db 0
 dw 0xaa55
-[BITS 32]
-global _start
-extern kernel_main
-_start:
-    call kernel_main
-halt:
-    jmp halt
