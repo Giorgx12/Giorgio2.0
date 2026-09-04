@@ -3,10 +3,6 @@ org 0x7c00
 section .text
 global start
 start:
-    mov ax, 0xb800
-    mov ds, ax
-    mov byte [0], 'B'
-    mov byte [1], 0x0F
     mov ax, 0x1000
     mov es, ax
     mov bx, 0
@@ -40,8 +36,6 @@ clear_screen:
     mov [edi], ax
     add edi, 2
     loop clear_screen
-    mov byte [0xb8000], 'B'
-    mov byte [0xb8001], 0x0F
     mov al, byte [0x00010000]
     cmp al, 0xAB
     je found_10000
