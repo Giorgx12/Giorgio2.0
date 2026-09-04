@@ -15,35 +15,33 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y nasm build-essential gcc-multilib
 
-    - name: Compila bootloader (ELF)
-      run: nasm -f elf32 boot.asm -o boot.o
+    - name: Compila bootloader (BIN)
+      run: nasm -f bin boot.asm -o boot.bin
 
-    - name: Linka bootloader
-      run: ld -m elf_i386 -T boot.ld -o boot.elf boot.o
-
-    - name: Converti bootloader in binario
-      run: objcopy -O binary boot.elf boot.bin
-
-    - name: Compila porte.asm
+    - name: Compila porte.asm (ELF)
       run: nasm -f elf32 porte.asm -o porte.o
 
-    - name: Compila kernel
+    - name: Compila kernel.cpp (ELF)
       run: g++ -m32 -ffreestanding -fno-pie -c kernel.cpp -o kernel.o
 
-    - name: Linka kernel
-      run: ld -m elf_i386 -T linker.ld -o kernel.elf porte.o kernel.o
+    - name: Compila kernel_entry.asm (ELF)
+      run: nasm -f elf32 kernel_entry.asm -o kernel_entry.o
+
+    - name: Linka kernel (ELF → ELF)
+      run: ld -m elf_i386 -T linker.ld -o kernel.elf kernel_entry.o porte.o kernel.o
 
     - name: Converti kernel in binario
       run: objcopy -O binary kernel.elf kernel.bin
 
+    - name: Allinea kernel a multipli di 512 byte
+      run: truncate -s %512 kernel.bin
+
     - name: Crea immagine finale
       run: cat boot.bin kernel.bin > os-image.bin
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: kernel-bin
-        path: os-image.bin
+    - name: Mostra dimensioni
+      run: ls -la
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
