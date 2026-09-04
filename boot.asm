@@ -40,7 +40,7 @@ clear_screen:
     mov byte [0xb8000], 'B'
     mov byte [0xb8001], 0x0F
     mov eax, 0x00010000
-    jmp eax     
+    jmp 0x08, 0x00010000
 hang:
     jmp hang
 gdt_start:
