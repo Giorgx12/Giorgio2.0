@@ -3,19 +3,20 @@ org 0x7c00
 section .text
 global start
 start:
-    mov byte [0xb8000], 'B'
-    mov byte [0xb8001], 0x0F
+    mov ax, 0xb800
+    mov ds, ax
+    mov byte [0], 'B'
+    mov byte [1], 0x0F
     mov ax, 0x1000
     mov es, ax
-    mov bx, 0x0000
-    mov ah, 0x02
+    mov bx, 0
+    mov ah, 2
     mov al, 32
     mov ch, 0
     mov cl, 1
     mov dh, 0
-    mov dl, 0x00
+    mov dl, 0
     int 0x13
-    mov es, 0x1000
     mov byte [es:0], 0xAB
     jc disk_error
     cli
@@ -40,7 +41,7 @@ clear_screen:
     add edi, 2
     loop clear_screen
     mov byte [0xb8000], 'B'
-    mov byte [0xb8001], 0x0f
+    mov byte [0xb8001], 0x0F
     mov al, byte [0x00010000]
     cmp al, 0xAB
     je found_10000
@@ -64,21 +65,22 @@ found_7c00:
 hang:
     jmp hang
 gdt_start:
-    dq 0x0
+    dq 0
 gdt_code:
-    dw 0xffff, 0x0000
-    db 0x00, 10011010b, 11001111b, 0x00
+    dw 0xffff, 0
+    db 0, 10011010b, 11001111b, 0
 gdt_data:
-    dw 0xffff, 0x0000
-    db 0x00, 10010010b, 11001111b, 0x00
+    dw 0xffff, 0
+    db 0, 10010010b, 11001111b, 0
 gdt_end:
 gdt_descriptor:
     dw gdt_end - gdt_start - 1
     dd gdt_start
 disk_error:
-    mov edi, 0xb8000
+    mov ax, 0xb800
+    mov ds, ax
     mov eax, 0x4F45
-    mov [edi], eax
+    mov [0], eax
     jmp disk_error
 times 510 - ($ - $$) db 0
 dw 0xaa55
