@@ -14,7 +14,6 @@ start:
     mov dl, 0
     int 0x13
     mov byte [es:0], 0xAB
-    jc disk_error
     cli
     lgdt [gdt_descriptor]
     mov eax, cr0
@@ -57,11 +56,12 @@ gdt_end:
 gdt_descriptor:
     dw gdt_end - gdt_start - 1
     dd gdt_start
-disk_error:
-    mov ax, 0xb800
-    mov ds, ax
-    mov eax, 0x4F45
-    mov [0], eax
-    jmp disk_error
 times 510 - ($ - $$) db 0
 dw 0xaa55
+[BITS 32]
+global _start
+extern kernel_main
+_start:
+    call kernel_main
+halt:
+    jmp halt
