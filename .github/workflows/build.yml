@@ -15,8 +15,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y nasm build-essential gcc-multilib
 
-    - name: Compila bootloader
-      run: nasm -f bin boot.asm -o boot.bin
+    - name: Compila bootloader (ELF)
+      run: nasm -f elf32 boot.asm -o boot.o
+
+    - name: Linka bootloader
+      run: ld -m elf_i386 -T boot.ld -o boot.elf boot.o
+
+    - name: Converti bootloader in binario
+      run: objcopy -O binary boot.elf boot.bin
 
     - name: Compila porte.asm
       run: nasm -f elf32 porte.asm -o porte.o
@@ -33,9 +39,11 @@ jobs:
     - name: Crea immagine finale
       run: cat boot.bin kernel.bin > os-image.bin
 
-    - name: Mostra dimensioni
-      run: ls -la
-
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: kernel-bin
+        path: os-image.bin
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
