@@ -15,17 +15,20 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y nasm build-essential gcc-multilib
 
-    - name: Compila bootloader
+    - name: Compila bootloader (bin)
       run: nasm -f bin boot.asm -o boot.bin
 
-    - name: Compila porte.asm
+    - name: Compila porte.asm (ELF)
       run: nasm -f elf32 porte.asm -o porte.o
 
-    - name: Compila kernel
+    - name: Compila kernel.cpp (ELF)
       run: g++ -m32 -ffreestanding -fno-pie -c kernel.cpp -o kernel.o
 
-    - name: Linka kernel
-      run: ld -m elf_i386 -T linker.ld -o kernel.elf porte.o kernel.o
+    - name: Compila kernel_entry.asm (ELF)
+      run: nasm -f elf32 kernel_entry.asm -o kernel_entry.o
+
+    - name: Linka kernel (ELF → ELF)
+      run: ld -m elf_i386 -T linker.ld -o kernel.elf kernel_entry.o porte.o kernel.o
 
     - name: Converti kernel in binario
       run: objcopy -O binary kernel.elf kernel.bin
