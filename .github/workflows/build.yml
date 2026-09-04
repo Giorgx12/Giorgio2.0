@@ -24,26 +24,4 @@ jobs:
     - name: Compila kernel.cpp (ELF)
       run: g++ -m32 -ffreestanding -fno-pie -c kernel.cpp -o kernel.o
 
-    - name: Compila kernel_entry.asm (ELF)
-      run: nasm -f elf32 kernel_entry.asm -o kernel_entry.o
-
-    - name: Linka kernel (ELF → ELF)
-      run: ld -m elf_i386 -T linker.ld -o kernel.elf kernel_entry.o porte.o kernel.o
-
-    - name: Converti kernel in binario
-      run: objcopy -O binary kernel.elf kernel.bin
-
-    - name: Allinea kernel a multipli di 512 byte
-      run: truncate -s %512 kernel.bin
-
-    - name: Crea immagine finale
-      run: cat boot.bin kernel.bin > os-image.bin
-
-    - name: Mostra dimensioni
-      run: ls -la
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: kernel-bin
-        path: os-image.bin
+    - name: Comp
