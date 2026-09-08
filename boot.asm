@@ -5,6 +5,8 @@ global start
 start:
     mov ax, 0x1000
     mov es, ax
+    mov cx, 0
+    mov ds, cx
     mov bx, 0
     mov ah, 2
     mov al, 32
@@ -13,7 +15,8 @@ start:
     mov dh, 0
     mov dl, 0
     int 0x13
-    mov byte [es:0], 0xAB
+    jc disk_error
+    mov byte [0x8000], 0xAB
     cli
     lgdt [gdt_descriptor]
     mov eax, cr0
@@ -28,6 +31,7 @@ protected_mode_start:
     mov fs, ax
     mov gs, ax
     mov ss, ax
+    mov esp, 0x9000
     mov edi, 0xb8000
     mov ecx, 2000
     mov ax, 0x0720
@@ -35,7 +39,7 @@ clear_screen:
     mov [edi], ax
     add edi, 2
     loop clear_screen
-    mov al, byte [0x00010000]
+    mov al, byte [0x8000]
     cmp al, 0xAB
     je kernel_here
     mov byte [0xb8000], 'N'
@@ -43,6 +47,9 @@ clear_screen:
 kernel_here:
     jmp 0x08:0x00010000
 hang:
+    jmp hang
+disk_error:
+    mov byte [0xb8000], 'E'
     jmp hang
 gdt_start:
     dq 0
