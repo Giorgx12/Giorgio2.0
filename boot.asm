@@ -9,11 +9,10 @@ start:
     mov ds, cx
     mov bx, 0
     mov ah, 2
-    mov al, 32
+    mov al, 1
     mov ch, 0
-    mov cl, 1
+    mov cl, 2
     mov dh, 0
-    mov dl, 0
     int 0x13
     jc disk_error
     mov byte [0x8000], 0xAB
@@ -45,6 +44,8 @@ clear_screen:
     mov byte [0xb8000], 'N'
     jmp hang
 kernel_here:
+    mov byte [0xb8000], 'B'
+    mov byte [0xb8001], 0x0F
     jmp 0x08:0x00010000
 hang:
     jmp hang
