@@ -102,6 +102,16 @@ void stampa_lettera(char lettera, int colore){
       aggiorna_cursore_hardware(cursore);
       return;
     }
+    if (lettera == '\b'){
+        if (cursore == 0){
+            return;
+        }
+        cursore--;
+        memoria_video[cursore * 2] = ' ';
+        memoria_video[cursore * 2 + 1] = 0x07;
+        aggiorna_cursore_hardware(cursore);
+        return;
+    }
     memoria_video[cursore * 2] = lettera;
     int cursore_colore = cursore * 2 + 1; 
     switch(colore){
