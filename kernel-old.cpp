@@ -226,7 +226,6 @@ void esegui_comando() {
         input[4] == ' ') {
         stampa_lettera('\n', 7);
         stampa_stringa(&input[5], 7);
-        stampa_lettera('\n', 7);
     }
 }
 extern "C" void kernel_main() {
