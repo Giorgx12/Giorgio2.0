@@ -1,3 +1,5 @@
 *.bin
 *.o
 *.elf
+build-old.bat
+build-old.ps1

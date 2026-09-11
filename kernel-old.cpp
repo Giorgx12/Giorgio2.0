@@ -224,6 +224,7 @@ void esegui_comando() {
         input[2] == 'h' &&
         input[3] == 'o' &&
         input[4] == ' ') {
+        stampa_lettera('\n', 7);
         stampa_stringa(&input[5], 7);
         stampa_lettera('\n', 7);
     }
