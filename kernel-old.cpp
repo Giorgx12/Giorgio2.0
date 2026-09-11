@@ -231,7 +231,8 @@ void esegui_comando() {
 extern "C" void kernel_main() {
     inizializza_tabella();
     stampa_stringa("That's Giorgio2.0", 7); 
-    
+    stampa_lettera('\n', 7); 
+    stampa_stringa("giorgio> ", 7);
     while(1) {
         leggi_tastiera();
     }
