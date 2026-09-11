@@ -88,8 +88,18 @@ void inizializza_tabella(){
 char* memoria_video = (char*)0xb8000;
 void stampa_lettera(char lettera, int colore){
     if (lettera == '\n'){
-        cursore += 80;
-        aggiorna_cursore_hardware(cursore);
+      cursore = (cursore / 80 + 1) * 80;
+      if (cursore >= (80 * 25)){
+          for (int i = 0; i < 24 * 160; i++){
+              memoria_video[i] = memoria_video[i + 160];
+          }
+          for (int i = 24 * 160; i < 25 * 160 - 1; i += 2){
+              memoria_video[i] = ' ';
+              memoria_video[i + 1] = 0x07;
+          }
+          cursore = 24 * 80;
+      }
+      aggiorna_cursore_hardware(cursore);
       return;
     }
     memoria_video[cursore * 2] = lettera;
@@ -158,10 +168,14 @@ void stampa_lettera(char lettera, int colore){
     aggiorna_cursore_hardware(cursore);
 }
 void leggi_tastiera() {
-    unsigned char sc = inb(0x60);
-    if (sc != 0) {
-        stampa_lettera(tabella_scancode[sc], 7);
+    if ((inb(0x64) & 1) == 0) {
+         return;
     }
+    unsigned char sc = inb(0x60);
+    if ((sc & 0x80) != 0) {
+        return;
+    }
+    stampa_lettera(tabella_scancode[sc], 7);
 }
 void stampa_stringa(const char* stringa, int colore){
     while (*stringa){
