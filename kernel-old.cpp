@@ -36,6 +36,8 @@ void init_idt(){
 sti */
 int cursore = 0;
 char tabella_scancode[128];
+char input[80];
+int input_lunghezza = 0;
 void aggiorna_cursore_hardware(int posizione){
     unsigned char parte_bassa = posizione & 0xFF;
     unsigned char parte_alta = posizione >> 8;
@@ -86,6 +88,7 @@ void inizializza_tabella(){
     tabella_scancode[0x0E] = '\b'; 
 }
 char* memoria_video = (char*)0xb8000;
+void esegui_comando();
 void stampa_lettera(char lettera, int colore){
     if (lettera == '\n'){
       cursore = (cursore / 80 + 1) * 80;
@@ -185,14 +188,46 @@ void leggi_tastiera() {
     if ((sc & 0x80) != 0) {
         return;
     }
-    stampa_lettera(tabella_scancode[sc], 7);
+    char carattere = tabella_scancode[sc];
+    if (carattere == 0) {
+        return;
+    }
+    if (carattere == '\n') {
+        input[input_lunghezza] = '\0';
+        esegui_comando();
+        input_lunghezza = 0;
+        stampa_lettera(carattere, 7);
+        return;
+    }
+    if (carattere == '\b') {
+        if (input_lunghezza > 0) {
+            input_lunghezza--;
+            stampa_lettera(carattere, 7);
+        }
+        return;
+    }
+    if (input_lunghezza < 79) {
+        input[input_lunghezza] = carattere;
+        input_lunghezza++;
+        stampa_lettera(carattere, 7);
+    }
 }
 void stampa_stringa(const char* stringa, int colore){
     while (*stringa){
         stampa_lettera(*stringa, colore);
         stringa++;
     }
-}extern "C" void kernel_main() {
+}
+void esegui_comando() {
+    if (input[0] == 'e' &&
+        input[1] == 'c' &&
+        input[2] == 'h' &&
+        input[3] == 'o' &&
+        input[4] == ' ') {
+        stampa_stringa(&input[5], 7);
+    }
+}
+extern "C" void kernel_main() {
     inizializza_tabella();
     stampa_stringa("That's Giorgio2.0", 7); 
     
