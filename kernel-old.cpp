@@ -232,6 +232,7 @@ void esegui_comando() {
         ritorna_prompt();
     }
     else{
+        stampa_lettera('\n', 7);
         stampa_stringa("Parola non trovata", 4);
         ritorna_prompt();
     }
