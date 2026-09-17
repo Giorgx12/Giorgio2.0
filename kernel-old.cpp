@@ -196,7 +196,6 @@ void leggi_tastiera() {
         input[input_lunghezza] = '\0';
         esegui_comando();
         input_lunghezza = 0;
-        stampa_lettera(carattere, 7);
         return;
     }
     if (carattere == '\b') {
