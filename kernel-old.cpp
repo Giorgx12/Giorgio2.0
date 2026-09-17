@@ -219,7 +219,7 @@ void stampa_stringa(const char* stringa, int colore){
     }
 }
 void ritorna_prompt(){
-    stampa_stringa("giorgio> ", 7);
+    stampa_stringa("giorgio>", 7);
 }
 void esegui_comando() {
     if (input[0] == 'e' &&
@@ -234,6 +234,7 @@ void esegui_comando() {
     else{
         stampa_lettera('\n', 7);
         stampa_stringa("Parola non trovata", 4);
+        stampa_lettera('\n', 7);
         ritorna_prompt();
     }
 }
