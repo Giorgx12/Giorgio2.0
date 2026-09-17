@@ -218,6 +218,9 @@ void stampa_stringa(const char* stringa, int colore){
         stringa++;
     }
 }
+void ritorna_prompt(){
+    stampa_stringa("giorgio> ", 7);
+}
 void esegui_comando() {
     if (input[0] == 'e' &&
         input[1] == 'c' &&
@@ -226,6 +229,11 @@ void esegui_comando() {
         input[4] == ' ') {
         stampa_lettera('\n', 7);
         stampa_stringa(&input[5], 7);
+        ritorna_prompt();
+    }
+    else{
+        stampa_stringa("Parola non trovata", 4);
+        ritorna_prompt();
     }
 }
 extern "C" void kernel_main() {
