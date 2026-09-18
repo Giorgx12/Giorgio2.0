@@ -230,6 +230,15 @@ void esegui_comando() {
         stampa_stringa(&input[5], 7);
         ritorna_prompt();
     }
+    else if(input[0] == 'h' &&
+        input[1] == 'e' &&
+        input[2] == 'l' &&
+        input[3] == 'p' &&
+        input[4] == ' '){
+        stampa_stringa("Comandi implementati: echo, help! Scrivine altri :)", 7);
+        stampa_lettera('\n', 7);
+        ritorna_prompt();
+    }
     else{
         stampa_lettera('\n', 7);
         stampa_stringa("Parola non trovata", 4);
