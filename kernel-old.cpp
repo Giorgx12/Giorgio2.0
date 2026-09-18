@@ -89,6 +89,7 @@ void inizializza_tabella(){
 }
 char* memoria_video = (char*)0xb8000;
 void esegui_comando();
+void pulisci_schermo();
 void stampa_lettera(char lettera, int colore){
     if (lettera == '\n'){
       cursore = (cursore / 80 + 1) * 80;
@@ -221,6 +222,12 @@ void ritorna_prompt(){
     stampa_lettera('\n', 7);
     stampa_stringa("giorgio>", 7);
 }
+void pulisci_schermo(){
+    for (int i = 0; i < 4000; i+=2){
+        memoria_video[i] = ' ';
+        memoria_video[i+1] = 1;
+    }
+}
 void esegui_comando() {
     if (input[0] == 'e' &&
         input[1] == 'c' &&
@@ -238,6 +245,13 @@ void esegui_comando() {
         stampa_lettera('\n', 7);
         stampa_stringa("Comandi implementati: echo, help! Scrivine altri :)", 7);
         ritorna_prompt();
+    }
+    else if(input[0] == 'c' &&
+        input[1] == 'l' &&
+        input[2] == 'e' &&
+        input[3] == 'a' &&
+        input[4] == 'r'){
+           pulisci_schermo();
     }
     else{
         stampa_lettera('\n', 7);
