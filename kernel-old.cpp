@@ -228,7 +228,7 @@ void pulisci_schermo(){
         memoria_video[i+1] = 1;
     }
     cursore = 0;
-    aggiorna_cursore_hardware();
+    aggiorna_cursore_hardware(cursore);
     
 }
 void esegui_comando() {
