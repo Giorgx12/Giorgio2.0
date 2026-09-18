@@ -233,8 +233,7 @@ void esegui_comando() {
     else if(input[0] == 'h' &&
         input[1] == 'e' &&
         input[2] == 'l' &&
-        input[3] == 'p' &&
-        input[4] == ' '){
+        input[3] == 'p'){
         stampa_stringa("Comandi implementati: echo, help! Scrivine altri :)", 7);
         stampa_lettera('\n', 7);
         ritorna_prompt();
