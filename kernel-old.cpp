@@ -227,6 +227,9 @@ void pulisci_schermo(){
         memoria_video[i] = ' ';
         memoria_video[i+1] = 1;
     }
+    cursore = 0;
+    aggiorna_cursore_hardware();
+    
 }
 void esegui_comando() {
     if (input[0] == 'e' &&
