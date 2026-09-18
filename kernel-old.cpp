@@ -218,6 +218,7 @@ void stampa_stringa(const char* stringa, int colore){
     }
 }
 void ritorna_prompt(){
+    stampa_lettera('\n', 7);
     stampa_stringa("giorgio>", 7);
 }
 void esegui_comando() {
@@ -226,7 +227,6 @@ void esegui_comando() {
         input[2] == 'h' &&
         input[3] == 'o' &&
         input[4] == ' ') {
-        stampa_lettera('\n', 7);
         stampa_stringa(&input[5], 7);
         ritorna_prompt();
     }
