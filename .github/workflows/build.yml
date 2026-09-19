@@ -1,49 +1,134 @@
-name: Compila Kernel
+name: Compila Giorgio2.0
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build kernel-old
+    runs-on: windows-latest
 
     steps:
-    - name: Scarica il repository
-      uses: actions/checkout@v4
+      - name: Scarica il repository
+        uses: actions/checkout@v4
 
-    - name: Installa NASM e GCC
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y nasm build-essential gcc-multilib
+      - name: Installa NASM
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
 
-    - name: Compila bootloader (BIN)
-      run: nasm -f bin boot.asm -o boot.bin
+          $nasmVersion = "2.16.01"
+          $nasmDir = Join-Path $env:LOCALAPPDATA "bin\NASM"
+          $zipPath = Join-Path $env:TEMP "nasm.zip"
+          $extractDir = Join-Path $env:TEMP "nasm"
 
-    - name: Compila porte.asm (ELF)
-      run: nasm -f elf32 porte.asm -o porte.o
+          New-Item -ItemType Directory -Force -Path $nasmDir | Out-Null
 
-    - name: Compila kernel.cpp (ELF)
-      run: g++ -m32 -ffreestanding -fno-pie -c kernel.cpp -o kernel.o
+          $url = "https://www.nasm.us/pub/nasm/releasebuilds/$nasmVersion/win64/nasm-$nasmVersion-win64.zip"
 
-    - name: Compila kernel_entry.asm (ELF)
-      run: nasm -f elf32 kernel_entry.asm -o kernel_entry.o
+          Invoke-WebRequest `
+            -Uri $url `
+            -OutFile $zipPath
 
-    - name: Linka kernel (ELF → ELF)
-      run: ld -m elf_i386 -T linker.ld -o kernel.elf kernel_entry.o porte.o kernel.o
+          Expand-Archive `
+            -Path $zipPath `
+            -DestinationPath $extractDir `
+            -Force
 
-    - name: Converti kernel in binario
-      run: objcopy -O binary kernel.elf kernel.bin
+          $nasmSourceDir = Join-Path $extractDir "nasm-$nasmVersion"
 
-    - name: Allinea kernel a multipli di 512 byte
-      run: truncate -s %512 kernel.bin
+          Copy-Item `
+            -Path (Join-Path $nasmSourceDir "*") `
+            -Destination $nasmDir `
+            -Recurse `
+            -Force
 
-    - name: Crea immagine finale
-      run: cat boot.bin kernel.bin > os-image.bin
+          $nasmExecutable = Join-Path $nasmDir "nasm.exe"
 
-    - name: Mostra dimensioni
-      run: ls -la
+          if (-not (Test-Path $nasmExecutable)) {
+            throw "NASM non trovato in $nasmExecutable"
+          }
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: kernel-bin
-        path: os-image.bin
+          $nasmDir | Out-File `
+            -FilePath $env:GITHUB_PATH `
+            -Encoding utf8 `
+            -Append
+
+          & $nasmExecutable -v
+
+      - name: Installa Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.13.0
+
+      - name: Installa MinGW e QEMU
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          choco install mingw qemu -y --no-progress
+
+          $mingwBin = "C:\ProgramData\mingw64\mingw64\bin"
+
+          if (-not (Test-Path (Join-Path $mingwBin "objcopy.exe"))) {
+            $objcopy = Get-ChildItem `
+              -Path "C:\ProgramData\chocolatey\lib" `
+              -Filter "objcopy.exe" `
+              -Recurse `
+              -ErrorAction SilentlyContinue |
+              Select-Object -First 1
+
+            if (-not $objcopy) {
+              throw "objcopy.exe non trovato dopo l'installazione di MinGW"
+            }
+
+            $mingwBin = $objcopy.Directory.FullName
+          }
+
+          $qemu = Get-ChildItem `
+            -Path "C:\Program Files", "C:\ProgramData\chocolatey\lib" `
+            -Filter "qemu-system-i386.exe" `
+            -Recurse `
+            -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+
+          if (-not $qemu) {
+            throw "qemu-system-i386.exe non trovato dopo l'installazione di QEMU"
+          }
+
+          $mingwBin | Out-File `
+            -FilePath $env:GITHUB_PATH `
+            -Encoding utf8 `
+            -Append
+
+          $qemu.Directory.FullName | Out-File `
+            -FilePath $env:GITHUB_PATH `
+            -Encoding utf8 `
+            -Append
+
+      - name: Verifica strumenti
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          Get-Command nasm.exe
+          Get-Command zig.exe
+          Get-Command objcopy.exe
+          Get-Command qemu-system-i386.exe
+
+      - name: Compila con build-old.ps1
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          .\build-old.ps1
+
+      - name: Carica immagine OS
+        uses: actions/upload-artifact@v4
+        with:
+          name: giorgio2-os-image
+          path: |
+            os-old-image.bin
+            boot.bin
+            kernel-old.bin
+            kernel-old.elf
