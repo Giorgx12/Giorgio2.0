@@ -7,123 +7,109 @@ on:
 jobs:
   build:
     name: Build kernel-old
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Scarica il repository
         uses: actions/checkout@v4
 
-      - name: Installa NASM
-        shell: pwsh
+      - name: Installa strumenti
         run: |
-          $ErrorActionPreference = "Stop"
-
-          $nasmVersion = "2.16.01"
-          $nasmDir = Join-Path $env:LOCALAPPDATA "bin\NASM"
-          $zipPath = Join-Path $env:TEMP "nasm.zip"
-          $extractDir = Join-Path $env:TEMP "nasm"
-
-          New-Item -ItemType Directory -Force -Path $nasmDir | Out-Null
-
-          $url = "https://www.nasm.us/pub/nasm/releasebuilds/$nasmVersion/win64/nasm-$nasmVersion-win64.zip"
-
-          Invoke-WebRequest `
-            -Uri $url `
-            -OutFile $zipPath
-
-          Expand-Archive `
-            -Path $zipPath `
-            -DestinationPath $extractDir `
-            -Force
-
-          $nasmSourceDir = Join-Path $extractDir "nasm-$nasmVersion"
-
-          Copy-Item `
-            -Path (Join-Path $nasmSourceDir "*") `
-            -Destination $nasmDir `
-            -Recurse `
-            -Force
-
-          $nasmExecutable = Join-Path $nasmDir "nasm.exe"
-
-          if (-not (Test-Path $nasmExecutable)) {
-            throw "NASM non trovato in $nasmExecutable"
-          }
-
-          $nasmDir | Out-File `
-            -FilePath $env:GITHUB_PATH `
-            -Encoding utf8 `
-            -Append
-
-          & $nasmExecutable -v
+          sudo apt-get update
+          sudo apt-get install -y \
+            nasm \
+            binutils \
+            qemu-system-x86
 
       - name: Installa Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
           version: 0.13.0
 
-      - name: Installa MinGW e QEMU
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = "Stop"
-
-          choco install mingw qemu -y --no-progress
-
-          $mingwBin = "C:\ProgramData\mingw64\mingw64\bin"
-
-          if (-not (Test-Path (Join-Path $mingwBin "objcopy.exe"))) {
-            $objcopy = Get-ChildItem `
-              -Path "C:\ProgramData\chocolatey\lib" `
-              -Filter "objcopy.exe" `
-              -Recurse `
-              -ErrorAction SilentlyContinue |
-              Select-Object -First 1
-
-            if (-not $objcopy) {
-              throw "objcopy.exe non trovato dopo l'installazione di MinGW"
-            }
-
-            $mingwBin = $objcopy.Directory.FullName
-          }
-
-          $qemu = Get-ChildItem `
-            -Path "C:\Program Files", "C:\ProgramData\chocolatey\lib" `
-            -Filter "qemu-system-i386.exe" `
-            -Recurse `
-            -ErrorAction SilentlyContinue |
-            Select-Object -First 1
-
-          if (-not $qemu) {
-            throw "qemu-system-i386.exe non trovato dopo l'installazione di QEMU"
-          }
-
-          $mingwBin | Out-File `
-            -FilePath $env:GITHUB_PATH `
-            -Encoding utf8 `
-            -Append
-
-          $qemu.Directory.FullName | Out-File `
-            -FilePath $env:GITHUB_PATH `
-            -Encoding utf8 `
-            -Append
-
       - name: Verifica strumenti
-        shell: pwsh
         run: |
-          $ErrorActionPreference = "Stop"
+          nasm -v
+          zig version
+          objcopy --version
+          qemu-system-i386 --version
 
-          Get-Command nasm.exe
-          Get-Command zig.exe
-          Get-Command objcopy.exe
-          Get-Command qemu-system-i386.exe
-
-      - name: Compila con build-old.ps1
-        shell: pwsh
+      - name: Compila boot.asm
         run: |
-          $ErrorActionPreference = "Stop"
-          .\build-old.ps1
+          nasm -f bin boot.asm -o boot.bin
 
-      - name: Carica immagine OS
+      - name: Compila kernel_entry.asm
+        run: |
+          nasm -f elf32 kernel_entry.asm -o kernel_entry.o
+
+      - name: Compila porte.asm
+        run: |
+          nasm -f elf32 porte.asm -o porte.o
+
+      - name: Compila kernel-old.cpp
+        run: |
+          zig c++ \
+            -target x86-freestanding \
+            -ffreestanding \
+            -fno-exceptions \
+            -fno-rtti \
+            -fno-sanitize=undefined \
+            -c kernel-old.cpp \
+            -o kernel-old.o
+
+      - name: Collega kernel-old
+        run: |
+          zig c++ \
+            -target x86-freestanding \
+            -nostdlib \
+            -fno-exceptions \
+            -fno-rtti \
+            -fuse-ld=lld \
+            -Wl,-T,linker.ld \
+            -o kernel-old.elf \
+            kernel_entry.o \
+            porte.o \
+            kernel-old.o
+
+      - name: Converti il kernel in binario
+        run: |
+          objcopy \
+            -O binary \
+            kernel-old.elf \
+            kernel-old.bin
+
+      - name: Allinea il kernel a 6 settori
+        shell: bash
+        run: |
+          set -e
+
+          kernel_size=$(stat -c%s kernel-old.bin)
+          sectors=$(( (kernel_size + 511) / 512 ))
+
+          if [ "$sectors" -gt 6 ]; then
+            echo "Errore: kernel-old.bin supera i 6 settori supportati da boot.asm"
+            exit 1
+          fi
+
+          truncate -s 3072 kernel-old.bin
+
+          echo "Dimensione originale: ${kernel_size} byte"
+          echo "Settori utilizzati: ${sectors}"
+          echo "Dimensione allineata: $(stat -c%s kernel-old.bin) byte"
+
+      - name: Crea immagine OS
+        run: |
+          cat boot.bin kernel-old.bin > os-old-image.bin
+
+      - name: Mostra i file generati
+        run: |
+          ls -lh \
+            boot.bin \
+            kernel-old.o \
+            kernel-old.elf \
+            kernel-old.bin \
+            os-old-image.bin
+
+      - name: Carica artifact
         uses: actions/upload-artifact@v4
         with:
           name: giorgio2-os-image
