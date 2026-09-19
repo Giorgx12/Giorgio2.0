@@ -88,6 +88,7 @@ void inizializza_tabella(){
     tabella_scancode[0x0E] = '\b'; 
 }
 char* memoria_video = (char*)0xb8000;
+void a_capo();
 void esegui_comando();
 void pulisci_schermo();
 void stampa_lettera(char lettera, int colore){
@@ -218,9 +219,12 @@ void stampa_stringa(const char* stringa, int colore){
         stringa++;
     }
 }
-void ritorna_prompt(){
+void a_capo(){
     stampa_lettera('\n', 7);
+}
+void ritorna_prompt(){
     stampa_stringa("giorgio>", 7);
+    a_capo();
 }
 void pulisci_schermo(){
     for (int i = 0; i < 4000; i+=2){
@@ -229,7 +233,7 @@ void pulisci_schermo(){
     }
     cursore = 0;
     aggiorna_cursore_hardware(cursore);
-    
+    ritorna_prompt();
 }
 void esegui_comando() {
     if (input[0] == 'e' &&
@@ -237,16 +241,18 @@ void esegui_comando() {
         input[2] == 'h' &&
         input[3] == 'o' &&
         input[4] == ' ') {
-        stampa_lettera('\n', 7);
+        a_capo();
         stampa_stringa(&input[5], 7);
+        a_capo();
         ritorna_prompt();
     }
     else if(input[0] == 'h' &&
         input[1] == 'e' &&
         input[2] == 'l' &&
         input[3] == 'p'){
-        stampa_lettera('\n', 7);
-        stampa_stringa("Comandi implementati: echo, help! Scrivine altri :)", 7);
+        a_capo();
+        stampa_stringa("Comandi implementati: echo, help, clear! Scrivine altri :)", 7);
+        a_capo();
         ritorna_prompt();
     }
     else if(input[0] == 'c' &&
@@ -259,6 +265,7 @@ void esegui_comando() {
     else{
         stampa_lettera('\n', 7);
         stampa_stringa("Parola non trovata", 4);
+        a_capo();
         ritorna_prompt();
     }
 }
