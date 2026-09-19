@@ -18,22 +18,20 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             nasm \
-            binutils \
-            qemu-system-x86
-
-      - name: Installa Zig
-        uses: goto-bus-stop/setup-zig@v2
-        with:
-          version: 0.13.0
+            gcc \
+            g++ \
+            gcc-multilib \
+            binutils
 
       - name: Verifica strumenti
         run: |
           nasm -v
-          zig version
+          gcc --version
+          g++ --version
           objcopy --version
-          qemu-system-i386 --version
+          ld --version
 
-      - name: Compila boot.asm
+      - name: Compila bootloader
         run: |
           nasm -f bin boot.asm -o boot.bin
 
@@ -47,24 +45,22 @@ jobs:
 
       - name: Compila kernel-old.cpp
         run: |
-          zig c++ \
-            -target x86-freestanding \
+          g++ \
+            -m32 \
             -ffreestanding \
+            -fno-pie \
             -fno-exceptions \
             -fno-rtti \
-            -fno-sanitize=undefined \
+            -fno-stack-protector \
+            -nostdinc++ \
             -c kernel-old.cpp \
             -o kernel-old.o
 
-      - name: Collega kernel-old
+      - name: Collega il kernel
         run: |
-          zig c++ \
-            -target x86-freestanding \
-            -nostdlib \
-            -fno-exceptions \
-            -fno-rtti \
-            -fuse-ld=lld \
-            -Wl,-T,linker.ld \
+          ld \
+            -m elf_i386 \
+            -T linker.ld \
             -o kernel-old.elf \
             kernel_entry.o \
             porte.o \
@@ -86,7 +82,7 @@ jobs:
           sectors=$(( (kernel_size + 511) / 512 ))
 
           if [ "$sectors" -gt 6 ]; then
-            echo "Errore: kernel-old.bin supera i 6 settori supportati da boot.asm"
+            echo "Errore: il kernel supera i 6 settori supportati dal bootloader"
             exit 1
           fi
 
