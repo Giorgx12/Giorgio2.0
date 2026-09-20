@@ -262,7 +262,7 @@ void esegui_comando() {
     }
     else if (inizia_con(input, "about")) {
         a_capo();
-        stampa_stringa("Giorgio2.0", 7);
+        stampa_stringa("Giorgio2.0. Ideato, costruito e implementato da Giorgio Bridarolli (in arte Giorgx12)", 7);
         a_capo();
         ritorna_prompt();
     }
