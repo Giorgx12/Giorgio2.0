@@ -38,4 +38,4 @@ $boot = [IO.File]::ReadAllBytes(".\boot.bin")
 [IO.File]::WriteAllBytes(".\os-old-image.bin", $boot + $aligned)
 
 Write-Host "[7/7] Avvio QEMU..."
-& $qemu.Source -drive "file=.\os-old-image.bin,format=raw,if=ide" -boot order=c -no-reboot -no-shutdown
+& $qemu.Source -drive "file=.\os-old-image.bin,format=raw,if=ide" -boot order=c
