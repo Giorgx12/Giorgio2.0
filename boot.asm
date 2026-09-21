@@ -16,6 +16,8 @@ start:
     int 0x13
     jc disk_error
     mov byte [0x8000], 0xAB
+    mov ax, 0x0013
+    int 0x10
     cli
     lgdt [gdt_descriptor]
     mov eax, cr0

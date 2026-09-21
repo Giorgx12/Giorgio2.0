@@ -20,22 +20,22 @@ Write-Host "[2/7] Assemblo kernel_entry.asm..."
 Write-Host "[3/7] Assemblo porte.asm..."
 & $nasm -f elf32 .\porte.asm -o .\porte.o
 
-Write-Host "[4/7] Compilo kernel-old.cpp..."
-& $zig.Source c++ -target x86-freestanding -ffreestanding -fno-exceptions -fno-rtti -fno-sanitize=undefined -c .\kernel-old.cpp -o .\kernel-old.o
+Write-Host "[4/7] Compilo kernel.cpp..."
+& $zig.Source c++ -target x86-freestanding -ffreestanding -fno-exceptions -fno-rtti -fno-sanitize=undefined -c .\kernel.cpp -o .\kernel.o
 
 Write-Host "[5/7] Collego kernel..."
-& $zig.Source c++ -target x86-freestanding -nostdlib -fno-exceptions -fno-rtti -fuse-ld=lld "-Wl,-T,.\linker.ld" -o .\kernel-old.elf .\kernel_entry.o .\porte.o .\kernel-old.o
+& $zig.Source c++ -target x86-freestanding -nostdlib -fno-exceptions -fno-rtti -fuse-ld=lld "-Wl,-T,.\linker.ld" -o .\kernel.elf .\kernel_entry.o .\porte.o .\kernel.o
 
 Write-Host "[6/7] Creo immagine..."
-& $objcopy.Source -O binary .\kernel-old.elf .\kernel-old.bin
-$kernel = [IO.File]::ReadAllBytes(".\kernel-old.bin")
+& $objcopy.Source -O binary .\kernel.elf .\kernel.bin
+$kernel = [IO.File]::ReadAllBytes(".\kernel.bin")
 $sectors = [Math]::Ceiling($kernel.Length / 512)
-if ($sectors -gt 6) { throw "kernel-old.bin supera i 6 settori supportati da boot.asm" }
+if ($sectors -gt 6) { throw "kernel.bin supera i 6 settori supportati da boot.asm" }
 $aligned = New-Object byte[] (6 * 512)
 [Array]::Copy($kernel, $aligned, $kernel.Length)
-[IO.File]::WriteAllBytes(".\kernel-old.bin", $aligned)
+[IO.File]::WriteAllBytes(".\kernel.bin", $aligned)
 $boot = [IO.File]::ReadAllBytes(".\boot.bin")
-[IO.File]::WriteAllBytes(".\os-old-image.bin", $boot + $aligned)
+[IO.File]::WriteAllBytes(".\os-image.bin", $boot + $aligned)
 
 Write-Host "[7/7] Avvio QEMU..."
-& $qemu.Source -drive "file=.\os-old-image.bin,format=raw,if=ide" -boot order=c
+& $qemu.Source -drive "file=.\os-image.bin,format=raw,if=ide" -boot order=c

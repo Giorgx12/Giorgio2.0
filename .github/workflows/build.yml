@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Build kernel-old
+    name: Build kernel
     runs-on: ubuntu-latest
 
     steps:
@@ -43,7 +43,7 @@ jobs:
         run: |
           nasm -f elf32 porte.asm -o porte.o
 
-      - name: Compila kernel-old.cpp
+      - name: Compila kernel.cpp
         run: |
           g++ \
             -m32 \
@@ -53,32 +53,32 @@ jobs:
             -fno-rtti \
             -fno-stack-protector \
             -nostdinc++ \
-            -c kernel-old.cpp \
-            -o kernel-old.o
+            -c kernel.cpp \
+            -o kernel.o
 
       - name: Collega il kernel
         run: |
           ld \
             -m elf_i386 \
             -T linker.ld \
-            -o kernel-old.elf \
+            -o kernel.elf \
             kernel_entry.o \
             porte.o \
-            kernel-old.o
+            kernel.o
 
       - name: Converti il kernel in binario
         run: |
           objcopy \
             -O binary \
-            kernel-old.elf \
-            kernel-old.bin
+            kernel.elf \
+            kernel.bin
 
       - name: Allinea il kernel a 6 settori
         shell: bash
         run: |
           set -e
 
-          kernel_size=$(stat -c%s kernel-old.bin)
+          kernel_size=$(stat -c%s kernel.bin)
           sectors=$(( (kernel_size + 511) / 512 ))
 
           if [ "$sectors" -gt 6 ]; then
@@ -86,31 +86,31 @@ jobs:
             exit 1
           fi
 
-          truncate -s 3072 kernel-old.bin
+          truncate -s 3072 kernel.bin
 
           echo "Dimensione originale: ${kernel_size} byte"
           echo "Settori utilizzati: ${sectors}"
-          echo "Dimensione allineata: $(stat -c%s kernel-old.bin) byte"
+          echo "Dimensione allineata: $(stat -c%s kernel.bin) byte"
 
       - name: Crea immagine OS
         run: |
-          cat boot.bin kernel-old.bin > os-old-image.bin
+          cat boot.bin kernel.bin > os-image.bin
 
       - name: Mostra i file generati
         run: |
           ls -lh \
             boot.bin \
-            kernel-old.o \
-            kernel-old.elf \
-            kernel-old.bin \
-            os-old-image.bin
+            kernel.o \
+            kernel.elf \
+            kernel.bin \
+            os-image.bin
 
       - name: Carica artifact
         uses: actions/upload-artifact@v4
         with:
           name: giorgio2-os-image
           path: |
-            os-old-image.bin
+            os-image.bin
             boot.bin
-            kernel-old.bin
-            kernel-old.elf
+            kernel.bin
+            kernel.elf
