@@ -352,8 +352,8 @@ extern "C" void kernel_main() {
     stampa_lettera('\n', 7); 
     stampa_stringa("giorgio> ", 7);
     disegna_lettera(100, 50, 15, 'a');
-    disegna_lettera(105, 50, 15, 'b');
-    disegna_lettera(110, 50, 15, 'c');
+    disegna_lettera(106, 50, 15, 'b');
+    disegna_lettera(112, 50, 15, 'c');
     while(1) {
         leggi_tastiera();
     }
