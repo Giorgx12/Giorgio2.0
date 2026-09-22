@@ -36,6 +36,7 @@ void init_idt(){
 sti */
 int cursore = 0;
 char tabella_scancode[128];
+char lettera_a[64];
 char input[80];
 int input_lunghezza = 0;
 void riavvia();
@@ -103,6 +104,12 @@ void disegna_rettangolo(int inizio_x, int fine_x, int inizio_y, int fine_y, unsi
         }
     }
 }
+lettera_a = [0, 0, , 1, 1, 0, 0, 0,
+             0, 0, 1, 0, 0, 1, 0, 0,
+             0, 0, 1, 0, 0, 1, 0, 0,
+             0, 0, 1, 0, 0, 1, 0, 0,
+             0, 0, 1, 1, 1, 1, 0, 0,
+             0, 0, 1, 0, 0, 1, 0, 0];
 void disegna_lettera(unsigned char lettera);
 void stampa_lettera(char lettera, int colore){
     if (lettera == '\n'){
