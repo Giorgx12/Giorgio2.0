@@ -36,7 +36,6 @@ void init_idt(){
 sti */
 int cursore = 0;
 char tabella_scancode[128];
-char lettera_a[64];
 char input[80];
 int input_lunghezza = 0;
 void riavvia();
@@ -104,15 +103,40 @@ void disegna_rettangolo(int inizio_x, int fine_x, int inizio_y, int fine_y, unsi
         }
     }
 }
-/*char lettera_a = [0, 0, , 1, 1, 0, 0, 0,
-             0, 0, 1, 0, 0, 1, 0, 0,
-             0, 0, 1, 0, 0, 1, 0, 0,
-             0, 0, 1, 0, 0, 1, 0, 0,
-             0, 0, 1, 1, 1, 1, 0, 0,
-             0, 0, 1, 0, 0, 1, 0, 0];
+unsigned char lettera_a[6] = {
+    0b00011000,
+    0b00100100,
+    0b00100100,
+    0b00111100,
+    0b00100100,
+    0b00100100
+};
+unsigned char lettera_b[6] = {
+    0b00111000,
+    0b00100100,
+    0b00111000,
+    0b00100100,
+    0b00100100,
+    0b00111000
+};
+void disegna_lettera(int x, int y, unsigned char colore, char lettera) {
+    for (int riga = 0; riga < 6; riga++) {
+        for (int colonna = 0; colonna < 8; colonna++) {
+            if (lettera == 'a'){
+                if (lettera_a[riga] & (1 << (7 - colonna))) {
+                    disegna_pixel(x + colonna, y + riga, colore);
 
-*/
-void disegna_lettera(unsigned char lettera);
+                }
+            }
+            else if (lettera == 'b'){
+                if (lettera_b[riga] & (1 << (7 - colonna))) {
+                    disegna_pixel(x + colonna, y + riga, colore);
+
+                }
+            }
+        }
+    }
+}
 void stampa_lettera(char lettera, int colore){
     if (lettera == '\n'){
       cursore = (cursore / 80 + 1) * 80;
@@ -309,7 +333,8 @@ extern "C" void kernel_main() {
     stampa_stringa("That's Giorgio2.0", 7); 
     stampa_lettera('\n', 7); 
     stampa_stringa("giorgio> ", 7);
-    disegna_rettangolo(0, 199, 0, 199, 1);
+    disegna_lettera(100, 50, 15, 'a');
+    disegna_lettera(105, 50, 15, 'b');
     while(1) {
         leggi_tastiera();
     }
