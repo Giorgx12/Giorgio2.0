@@ -103,33 +103,51 @@ void disegna_rettangolo(int inizio_x, int fine_x, int inizio_y, int fine_y, unsi
         }
     }
 }
-unsigned char lettera_a[6] = {
-    0b00011000,
-    0b00100100,
-    0b00100100,
-    0b00111100,
-    0b00100100,
-    0b00100100
+unsigned char lettera_a[7] = {
+    0b00110,
+    0b01001,
+    0b01001,
+    0b01111,
+    0b01001,
+    0b01001,
+    0b01001
 };
-unsigned char lettera_b[6] = {
-    0b00111000,
-    0b00100100,
-    0b00111000,
-    0b00100100,
-    0b00100100,
-    0b00111000
+unsigned char lettera_b[7] = {
+    0b01110,
+    0b01001,
+    0b01001,
+    0b01110,
+    0b01001,
+    0b01001,
+    0b01110
+};
+unsigned char lettera_c[7] = {
+    0b01110,
+    0b10001,
+    0b10000,
+
+    0b10000,
+    0b10000,
+    0b10001,
+    0b01110
 };
 void disegna_lettera(int x, int y, unsigned char colore, char lettera) {
-    for (int riga = 0; riga < 6; riga++) {
-        for (int colonna = 0; colonna < 8; colonna++) {
+    for (int riga = 0; riga < 7; riga++) {
+        for (int colonna = 0; colonna < 5; colonna++) {
             if (lettera == 'a'){
-                if (lettera_a[riga] & (1 << (7 - colonna))) {
+                if (lettera_a[riga] & (1 << (4 - colonna))) {
                     disegna_pixel(x + colonna, y + riga, colore);
 
                 }
             }
             else if (lettera == 'b'){
-                if (lettera_b[riga] & (1 << (7 - colonna))) {
+                if (lettera_b[riga] & (1 << (4 - colonna))) {
+                    disegna_pixel(x + colonna, y + riga, colore);
+
+                }
+            }
+            else if (lettera == 'c'){
+                if (lettera_c[riga] & (1 << (4 - colonna))) {
                     disegna_pixel(x + colonna, y + riga, colore);
 
                 }
@@ -335,6 +353,7 @@ extern "C" void kernel_main() {
     stampa_stringa("giorgio> ", 7);
     disegna_lettera(100, 50, 15, 'a');
     disegna_lettera(105, 50, 15, 'b');
+    disegna_lettera(110, 50, 15, 'c');
     while(1) {
         leggi_tastiera();
     }
