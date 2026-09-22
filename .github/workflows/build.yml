@@ -73,7 +73,7 @@ jobs:
             kernel.elf \
             kernel.bin
 
-      - name: Allinea il kernel a 6 settori
+      - name: Allinea il kernel a 7 settori
         shell: bash
         run: |
           set -e
@@ -81,12 +81,12 @@ jobs:
           kernel_size=$(stat -c%s kernel.bin)
           sectors=$(( (kernel_size + 511) / 512 ))
 
-          if [ "$sectors" -gt 6 ]; then
-            echo "Errore: il kernel supera i 6 settori supportati dal bootloader"
+          if [ "$sectors" -gt 7 ]; then
+            echo "Errore: il kernel supera i 7 settori supportati dal bootloader"
             exit 1
           fi
 
-          truncate -s 3072 kernel.bin
+          truncate -s 3584 kernel.bin
 
           echo "Dimensione originale: ${kernel_size} byte"
           echo "Settori utilizzati: ${sectors}"

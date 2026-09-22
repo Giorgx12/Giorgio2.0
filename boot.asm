@@ -9,7 +9,7 @@ start:
     mov ds, cx
     mov bx, 0
     mov ah, 2
-    mov al, 6
+    mov al, 7
     mov ch, 0
     mov cl, 2
     mov dh, 0

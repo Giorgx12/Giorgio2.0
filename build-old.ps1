@@ -30,8 +30,8 @@ Write-Host "[6/7] Creo immagine..."
 & $objcopy.Source -O binary .\kernel.elf .\kernel.bin
 $kernel = [IO.File]::ReadAllBytes(".\kernel.bin")
 $sectors = [Math]::Ceiling($kernel.Length / 512)
-if ($sectors -gt 6) { throw "kernel.bin supera i 6 settori supportati da boot.asm" }
-$aligned = New-Object byte[] (6 * 512)
+if ($sectors -gt 7) { throw "kernel.bin supera i 7 settori supportati da boot.asm" }
+$aligned = New-Object byte[] (7 * 512)
 [Array]::Copy($kernel, $aligned, $kernel.Length)
 [IO.File]::WriteAllBytes(".\kernel.bin", $aligned)
 $boot = [IO.File]::ReadAllBytes(".\boot.bin")
