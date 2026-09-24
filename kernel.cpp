@@ -39,7 +39,8 @@ char tabella_scancode[128];
 char input[80];
 int input_lunghezza = 0;
 void riavvia();
-void aggiorna_cursore_hardware(int posizione){
+
+void aggiorna_cursore_hardware(int posizione) {
     unsigned char parte_bassa = posizione & 0xFF;
     unsigned char parte_alta = posizione >> 8;
     outb(0x3D4, 0x0F);
@@ -47,7 +48,8 @@ void aggiorna_cursore_hardware(int posizione){
     outb(0x3D4, 0x0E);
     outb(0x3D5, parte_alta);
 }
-void inizializza_tabella(){
+
+void inizializza_tabella() {
     tabella_scancode[0x1E] = 'a';
     tabella_scancode[0x30] = 'b';
     tabella_scancode[0x2E] = 'c';
@@ -84,25 +86,29 @@ void inizializza_tabella(){
     tabella_scancode[0x09] = '8';
     tabella_scancode[0x0A] = '9';
     tabella_scancode[0x0B] = '0';
-    tabella_scancode[0x39] = ' ';  
-    tabella_scancode[0x1C] = '\n';  
-    tabella_scancode[0x0E] = '\b'; 
+    tabella_scancode[0x39] = ' ';
+    tabella_scancode[0x1C] = '\n';
+    tabella_scancode[0x0E] = '\b';
 }
+
 char* memoria_video = (char*)0xb8000;
 char* memoria_grafica = (char*)0xA0000;
 void a_capo();
 void esegui_comando();
 void pulisci_schermo();
-void disegna_pixel(int x, int y, unsigned char colore){
+
+void disegna_pixel(int x, int y, unsigned char colore) {
     memoria_grafica[y * 320 + x] = colore;
 }
-void disegna_rettangolo(int inizio_x, int fine_x, int inizio_y, int fine_y, unsigned char colore){
-    for (int i = inizio_y; i < fine_y; i++){
-        for (int j = inizio_x; j < fine_x; j++){
+
+void disegna_rettangolo(int inizio_x, int fine_x, int inizio_y, int fine_y, unsigned char colore) {
+    for (int i = inizio_y; i < fine_y; i++) {
+        for (int j = inizio_x; j < fine_x; j++) {
             disegna_pixel(j, i, colore);
         }
     }
 }
+
 unsigned char lettere_a_z[26][7] = {
     {0b01110, 0b10001, 0b10001, 0b11111, 0b10001, 0b10001, 0b10001},
     {0b11110, 0b10001, 0b10001, 0b11110, 0b10001, 0b10001, 0b11110},
@@ -129,12 +135,14 @@ unsigned char lettere_a_z[26][7] = {
     {0b10001, 0b10001, 0b10001, 0b01010, 0b01010, 0b01010, 0b00100},
     {0b10001, 0b10001, 0b01010, 0b00100, 0b01010, 0b10001, 0b10001},
     {0b10001, 0b10001, 0b01010, 0b00100, 0b00100, 0b00100, 0b00100},
-    {0b11111, 0b00001, 0b00010, 0b00100, 0b01000, 0b10000, 0b11111}
-};
+    {0b11111, 0b00001, 0b00010, 0b00100, 0b01000, 0b10000, 0b11111}};
+
 void disegna_lettera(int x, int y, unsigned char colore, char lettera) {
     unsigned char* bitmap = 0;
-    if (lettera >= 'a' && lettera <= 'z') bitmap = lettere_a_z[lettera - 'a'];
-    if (bitmap == 0) return;
+    if (lettera >= 'a' && lettera <= 'z')
+        bitmap = lettere_a_z[lettera - 'a'];
+    if (bitmap == 0)
+        return;
     for (int riga = 0; riga < 7; riga++) {
         for (int colonna = 0; colonna < 5; colonna++) {
             if (bitmap[riga] & (1 << (4 - colonna))) {
@@ -143,27 +151,33 @@ void disegna_lettera(int x, int y, unsigned char colore, char lettera) {
         }
     }
 }
+
 int grafica_x = 10;
 int grafica_y = 10;
-void stampa_lettera(char lettera, int colore){
-    
-    if (lettera == '\n'){
-      cursore = (cursore / 80 + 1) * 80;
-      if (cursore >= (80 * 25)){
-          for (int i = 0; i < 24 * 160; i++){
-              memoria_video[i] = memoria_video[i + 160];
-          }
-          for (int i = 24 * 160; i < 25 * 160 - 1; i += 2){
-              memoria_video[i] = ' ';
-              memoria_video[i + 1] = 0x07;
-          }
-          cursore = 24 * 80;
-      }
-      aggiorna_cursore_hardware(cursore);
-      return;
+int mouse_x = 160;
+int mouse_y = 100;
+int mouse_byte = 0;
+unsigned char mouse_packet[3];
+
+void stampa_lettera(char lettera, int colore) {
+
+    if (lettera == '\n') {
+        cursore = (cursore / 80 + 1) * 80;
+        if (cursore >= (80 * 25)) {
+            for (int i = 0; i < 24 * 160; i++) {
+                memoria_video[i] = memoria_video[i + 160];
+            }
+            for (int i = 24 * 160; i < 25 * 160 - 1; i += 2) {
+                memoria_video[i] = ' ';
+                memoria_video[i + 1] = 0x07;
+            }
+            cursore = 24 * 80;
+        }
+        aggiorna_cursore_hardware(cursore);
+        return;
     }
-    if (lettera == '\b'){
-        if (cursore == 0){
+    if (lettera == '\b') {
+        if (cursore == 0) {
             return;
         }
         cursore--;
@@ -173,63 +187,63 @@ void stampa_lettera(char lettera, int colore){
         return;
     }
     memoria_video[cursore * 2] = lettera;
-    int cursore_colore = cursore * 2 + 1; 
-    switch(colore){
-        case (0):
-            memoria_video[cursore_colore] = 0x00;
-            break;
-        case (1):
-            memoria_video[cursore_colore] = 0x01;
-            break;
-        case (2):
-            memoria_video[cursore_colore] = 0x02;
-            break;
-        case (3):
-            memoria_video[cursore_colore] = 0x03;
-            break;
-        case (4): 
-            memoria_video[cursore_colore] = 0x04;
-            break;
-        case (5): 
-            memoria_video[cursore_colore] = 0x05;
-            break;
-        case (6): 
-            memoria_video[cursore_colore] = 0x06;
-            break;
-        case (7): 
-            memoria_video[cursore_colore] = 0x07;
-            break;
-        case (8): 
-            memoria_video[cursore_colore] = 0x08;
-            break;
-        case (9): 
-            memoria_video[cursore_colore] = 0x09;
-            break;
-        case (10):
-            memoria_video[cursore_colore] = 0x0a;
-            break;
-        case (11): 
-            memoria_video[cursore_colore] = 0x0b;
-            break;
-        case (12): 
-            memoria_video[cursore_colore] = 0x0c;
-            break;
-        case (13):
-            memoria_video[cursore_colore] = 0x0d;
-            break;
-        case (14): 
-            memoria_video[cursore_colore] = 0x0e;
-            break;
-        case (15):
-            memoria_video[cursore_colore] = 0x0f;
-            break;
+    int cursore_colore = cursore * 2 + 1;
+    switch (colore) {
+    case (0):
+        memoria_video[cursore_colore] = 0x00;
+        break;
+    case (1):
+        memoria_video[cursore_colore] = 0x01;
+        break;
+    case (2):
+        memoria_video[cursore_colore] = 0x02;
+        break;
+    case (3):
+        memoria_video[cursore_colore] = 0x03;
+        break;
+    case (4):
+        memoria_video[cursore_colore] = 0x04;
+        break;
+    case (5):
+        memoria_video[cursore_colore] = 0x05;
+        break;
+    case (6):
+        memoria_video[cursore_colore] = 0x06;
+        break;
+    case (7):
+        memoria_video[cursore_colore] = 0x07;
+        break;
+    case (8):
+        memoria_video[cursore_colore] = 0x08;
+        break;
+    case (9):
+        memoria_video[cursore_colore] = 0x09;
+        break;
+    case (10):
+        memoria_video[cursore_colore] = 0x0a;
+        break;
+    case (11):
+        memoria_video[cursore_colore] = 0x0b;
+        break;
+    case (12):
+        memoria_video[cursore_colore] = 0x0c;
+        break;
+    case (13):
+        memoria_video[cursore_colore] = 0x0d;
+        break;
+    case (14):
+        memoria_video[cursore_colore] = 0x0e;
+        break;
+    case (15):
+        memoria_video[cursore_colore] = 0x0f;
+        break;
     }
-    cursore ++;
+    cursore++;
     if (cursore >= 80 * 25) {
-        for (int i = 0; i < 24 * 160; i++){
-            memoria_video[i] = memoria_video[i+160];
+        for (int i = 0; i < 24 * 160; i++) {
+            memoria_video[i] = memoria_video[i + 160];
         }
-        for (int i = 24 * 160; i < 25 * 160 - 1; i += 2){
+        for (int i = 24 * 160; i < 25 * 160 - 1; i += 2) {
             memoria_video[i] = ' ';
             memoria_video[i + 1] = 0x07;
         }
@@ -237,9 +251,10 @@ void stampa_lettera(char lettera, int colore){
     }
     aggiorna_cursore_hardware(cursore);
 }
+
 void leggi_tastiera() {
     if ((inb(0x64) & 1) == 0) {
-         return;
+        return;
     }
     unsigned char sc = inb(0x60);
     if ((sc & 0x80) != 0) {
@@ -279,30 +294,44 @@ void leggi_tastiera() {
     if (input_lunghezza < 79) {
         input[input_lunghezza] = carattere;
         input_lunghezza++;
-        //stampa_lettera(carattere, 7);
     }
 }
-void stampa_stringa(const char* stringa, int colore){
-    while (*stringa){
+
+void leggi_mouse() {
+    unsigned char stato = inb(0x64);
+    if ((stato & 1) == 0) {
+        return;
+    }
+    if ((stato & 0x20) == 0) {
+        return;
+    }
+}
+
+void stampa_stringa(const char* stringa, int colore) {
+    while (*stringa) {
         disegna_lettera(grafica_x, grafica_y, colore, *stringa);
         stringa++;
         grafica_x += 6;
     }
 }
-void riavvia(){
+
+void riavvia() {
     while (inb(0x64) & 2) {
     }
     outb(0x64, 0xFE);
     while (1) {
     }
 }
-void a_capo(){
+
+void a_capo() {
     grafica_y += 8;
     grafica_x = 10;
 }
-void ritorna_prompt(){
+
+void ritorna_prompt() {
     stampa_stringa("giorgio>", 7);
 }
+
 void pulisci_grafica() {
     for (int y = 0; y < 200; y++) {
         for (int x = 0; x < 320; x++) {
@@ -312,10 +341,12 @@ void pulisci_grafica() {
     grafica_x = 10;
     grafica_y = 10;
 }
-bool inizia_con(const char* testo, const char* prefisso){
+
+bool inizia_con(const char* testo, const char* prefisso) {
     int i = 0;
-    while (prefisso[i] != '\0'){
-        if (testo[i] != prefisso[i]) return false;
+    while (prefisso[i] != '\0') {
+        if (testo[i] != prefisso[i])
+            return false;
         i++;
     }
     return true;
@@ -327,45 +358,52 @@ void esegui_comando() {
         stampa_stringa(&input[5], 7);
         a_capo();
         ritorna_prompt();
-    }
-    else if (inizia_con(input, "help")) {
+    } else if (inizia_con(input, "help")) {
         a_capo();
         stampa_stringa("Comandi implementati: echo, help, clear, about!", 7);
         a_capo();
         ritorna_prompt();
-    }
-    else if (inizia_con(input, "clear")) {
+    } else if (inizia_con(input, "clear")) {
         pulisci_grafica();
-    }
-    else if (inizia_con(input, "about")) {
+    } else if (inizia_con(input, "about")) {
         a_capo();
-        stampa_stringa("Giorgio2.0. Ideato, costruito e implementato da Giorgio Bridarolli (in arte Giorgx12)", 7);
+        stampa_stringa(
+            "Giorgio2.0. Ideato, costruito e implementato da Giorgio Bridarolli (in arte Giorgx12)",
+            7);
         a_capo();
         ritorna_prompt();
-    }
-    else if (inizia_con(input, "riavvia")) {
+    } else if (inizia_con(input, "riavvia")) {
         riavvia();
-    }
-    else {
+    } else {
         a_capo();
         stampa_stringa("Parola non trovata", 4);
         a_capo();
         ritorna_prompt();
     }
 }
+
+void inizializza_mouse() {
+    outb(0x64, 0xA8);
+    outb(0x64, 0xD4);
+    outb(0x60, 0xF4);
+}
+
 int pos_cursore;
+
 extern "C" void kernel_main() {
     inizializza_tabella();
-    stampa_stringa("thats giorgio", 7); 
+    inizializza_mouse();
+    stampa_stringa("thats giorgio", 7);
     a_capo();
     stampa_stringa("giorgio> ", 7);
-    disegna_rettangolo(40, 280, 40, 140, 7);   // finestra
-    disegna_rettangolo(40, 280, 40, 40, 1);     // barra del titolo
-    disegna_rettangolo(45, 275, 60, 135, 0);    // contenuto nero
-    while(1) {
+    disegna_rettangolo(40, 280, 40, 140, 7); // finestra
+    disegna_rettangolo(40, 280, 40, 40, 1);  // barra del titolo
+    disegna_rettangolo(45, 275, 60, 135, 0); // contenuto nero
+    while (1) {
         leggi_tastiera();
     }
-} 
+}
+
 /*extern "C" void kernel_main() {
     char* vga = (char*)0xb8000;
     vga[0] = 'K';
