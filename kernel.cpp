@@ -303,14 +303,14 @@ void a_capo(){
 void ritorna_prompt(){
     stampa_stringa("giorgio>", 7);
 }
-void pulisci_schermo(){
-    for (int i = 0; i < 4000; i+=2){
-        memoria_video[i] = ' ';
-        memoria_video[i+1] = 0x07;
+void pulisci_grafica() {
+    for (int y = 0; y < 200; y++) {
+        for (int x = 0; x < 320; x++) {
+            memoria_grafica[y * 320 + x] = 0;
+        }
     }
-    cursore = 0;
-    aggiorna_cursore_hardware(cursore);
-    ritorna_prompt();
+    grafica_x = 10;
+    grafica_y = 10;
 }
 bool inizia_con(const char* testo, const char* prefisso){
     int i = 0;
@@ -335,7 +335,7 @@ void esegui_comando() {
         ritorna_prompt();
     }
     else if (inizia_con(input, "clear")) {
-        pulisci_schermo();
+        pulisci_grafica();
     }
     else if (inizia_con(input, "about")) {
         a_capo();
@@ -359,6 +359,9 @@ extern "C" void kernel_main() {
     stampa_stringa("thats giorgio", 7); 
     a_capo();
     stampa_stringa("giorgio> ", 7);
+    disegna_rettangolo(40, 280, 40, 140, 7);   // finestra
+    disegna_rettangolo(40, 280, 40, 40, 1);     // barra del titolo
+    disegna_rettangolo(45, 275, 60, 135, 0);    // contenuto nero
     while(1) {
         leggi_tastiera();
     }
