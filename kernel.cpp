@@ -103,59 +103,50 @@ void disegna_rettangolo(int inizio_x, int fine_x, int inizio_y, int fine_y, unsi
         }
     }
 }
-unsigned char lettera_a[7] = {
-    0b00110,
-    0b01001,
-    0b01001,
-    0b01111,
-    0b01001,
-    0b01001,
-    0b01001
-};
-unsigned char lettera_b[7] = {
-    0b01110,
-    0b01001,
-    0b01001,
-    0b01110,
-    0b01001,
-    0b01001,
-    0b01110
-};
-unsigned char lettera_c[7] = {
-    0b01110,
-    0b10001,
-    0b10000,
-
-    0b10000,
-    0b10000,
-    0b10001,
-    0b01110
+unsigned char lettere_a_z[26][7] = {
+    {0b01110, 0b10001, 0b10001, 0b11111, 0b10001, 0b10001, 0b10001},
+    {0b11110, 0b10001, 0b10001, 0b11110, 0b10001, 0b10001, 0b11110},
+    {0b01110, 0b10001, 0b10000, 0b10000, 0b10000, 0b10001, 0b01110},
+    {0b11110, 0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b11110},
+    {0b11111, 0b10000, 0b10000, 0b11110, 0b10000, 0b10000, 0b11111},
+    {0b11111, 0b10000, 0b10000, 0b11110, 0b10000, 0b10000, 0b10000},
+    {0b01110, 0b10001, 0b10000, 0b10111, 0b10001, 0b10001, 0b01110},
+    {0b10001, 0b10001, 0b10001, 0b11111, 0b10001, 0b10001, 0b10001},
+    {0b00100, 0b00000, 0b00100, 0b00100, 0b00100, 0b00100, 0b01110},
+    {0b00001, 0b00001, 0b00001, 0b00001, 0b10001, 0b10001, 0b01110},
+    {0b10001, 0b10010, 0b10100, 0b11000, 0b10100, 0b10010, 0b10001},
+    {0b10000, 0b10000, 0b10000, 0b10000, 0b10000, 0b10000, 0b11111},
+    {0b10001, 0b11011, 0b10101, 0b10101, 0b10001, 0b10001, 0b10001},
+    {0b10001, 0b11001, 0b10101, 0b10011, 0b10001, 0b10001, 0b10001},
+    {0b01110, 0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b01110},
+    {0b11110, 0b10001, 0b10001, 0b11110, 0b10000, 0b10000, 0b10000},
+    {0b01110, 0b10001, 0b10001, 0b10101, 0b10010, 0b10001, 0b01101},
+    {0b11110, 0b10001, 0b10000, 0b11110, 0b10100, 0b10010, 0b10001},
+    {0b01111, 0b10000, 0b10000, 0b01110, 0b00001, 0b00001, 0b11110},
+    {0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100},
+    {0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b10001, 0b01110},
+    {0b10001, 0b10001, 0b10001, 0b01010, 0b01010, 0b01010, 0b00100},
+    {0b10001, 0b10001, 0b10001, 0b01010, 0b01010, 0b01010, 0b00100},
+    {0b10001, 0b10001, 0b01010, 0b00100, 0b01010, 0b10001, 0b10001},
+    {0b10001, 0b10001, 0b01010, 0b00100, 0b00100, 0b00100, 0b00100},
+    {0b11111, 0b00001, 0b00010, 0b00100, 0b01000, 0b10000, 0b11111}
 };
 void disegna_lettera(int x, int y, unsigned char colore, char lettera) {
+    unsigned char* bitmap = 0;
+    if (lettera >= 'a' && lettera <= 'z') bitmap = lettere_a_z[lettera - 'a'];
+    if (bitmap == 0) return;
     for (int riga = 0; riga < 7; riga++) {
         for (int colonna = 0; colonna < 5; colonna++) {
-            if (lettera == 'a'){
-                if (lettera_a[riga] & (1 << (4 - colonna))) {
-                    disegna_pixel(x + colonna, y + riga, colore);
-
-                }
-            }
-            else if (lettera == 'b'){
-                if (lettera_b[riga] & (1 << (4 - colonna))) {
-                    disegna_pixel(x + colonna, y + riga, colore);
-
-                }
-            }
-            else if (lettera == 'c'){
-                if (lettera_c[riga] & (1 << (4 - colonna))) {
-                    disegna_pixel(x + colonna, y + riga, colore);
-
-                }
+            if (bitmap[riga] & (1 << (4 - colonna))) {
+                disegna_pixel(x + colonna, y + riga, colore);
             }
         }
     }
 }
+int grafica_x = 10;
+int grafica_y = 10;
 void stampa_lettera(char lettera, int colore){
+    
     if (lettera == '\n'){
       cursore = (cursore / 80 + 1) * 80;
       if (cursore >= (80 * 25)){
@@ -255,11 +246,21 @@ void leggi_tastiera() {
         return;
     }
     char carattere = tabella_scancode[sc];
+    if (carattere >= 'a' && carattere <= 'z') {
+        disegna_lettera(grafica_x, grafica_y, 15, carattere);
+        grafica_x += 6;
+
+        if (grafica_x + 5 >= 320) {
+            grafica_x = 10;
+            grafica_y += 8;
+        }
+    }
     if (carattere == 0) {
         return;
     }
     if (carattere == '\n') {
         input[input_lunghezza] = '\0';
+        a_capo();
         esegui_comando();
         input_lunghezza = 0;
         return;
@@ -271,16 +272,21 @@ void leggi_tastiera() {
         }
         return;
     }
+    if (carattere == ' ') {
+        grafica_x += 6;
+        return;
+    }
     if (input_lunghezza < 79) {
         input[input_lunghezza] = carattere;
         input_lunghezza++;
-        stampa_lettera(carattere, 7);
+        //stampa_lettera(carattere, 7);
     }
 }
 void stampa_stringa(const char* stringa, int colore){
     while (*stringa){
-        stampa_lettera(*stringa, colore);
+        disegna_lettera(grafica_x, grafica_y, colore, *stringa);
         stringa++;
+        grafica_x += 6;
     }
 }
 void riavvia(){
@@ -291,7 +297,8 @@ void riavvia(){
     }
 }
 void a_capo(){
-    stampa_lettera('\n', 7);
+    grafica_y += 8;
+    grafica_x = 10;
 }
 void ritorna_prompt(){
     stampa_stringa("giorgio>", 7);
@@ -346,14 +353,12 @@ void esegui_comando() {
         ritorna_prompt();
     }
 }
+int pos_cursore;
 extern "C" void kernel_main() {
     inizializza_tabella();
-    stampa_stringa("That's Giorgio2.0", 7); 
-    stampa_lettera('\n', 7); 
+    stampa_stringa("thats giorgio", 7); 
+    a_capo();
     stampa_stringa("giorgio> ", 7);
-    disegna_lettera(100, 50, 15, 'a');
-    disegna_lettera(106, 50, 15, 'b');
-    disegna_lettera(112, 50, 15, 'c');
     while(1) {
         leggi_tastiera();
     }
