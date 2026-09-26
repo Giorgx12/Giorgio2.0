@@ -251,47 +251,7 @@ void stampa_lettera(char lettera, int colore) {
     }
     aggiorna_cursore_hardware(cursore);
 }
-void aspetta_controller_libero() {
-    while ((inb(0x64) & 0x02) != 0) {
-    }
-}
 
-void aspetta_dato_controller() {
-    while ((inb(0x64) & 0x01) == 0) {
-    }
-}
-
-void invia_comando_mouse(unsigned char comando) {
-    aspetta_controller_libero();
-    outb(0x64, 0xD4);
-
-    aspetta_controller_libero();
-    outb(0x60, comando);
-}
-
-void inizializza_mouse() {
-    aspetta_controller_libero();
-    outb(0x64, 0xA8);
-
-    aspetta_controller_libero();
-    outb(0x64, 0x20);
-
-    aspetta_dato_controller();
-    unsigned char configurazione = inb(0x60);
-
-    configurazione &= ~0x20;
-
-    aspetta_controller_libero();
-    outb(0x64, 0x60);
-
-    aspetta_controller_libero();
-    outb(0x60, configurazione);
-
-    invia_comando_mouse(0xF4);
-
-    aspetta_dato_controller();
-    inb(0x60);
-}
 void leggi_tastiera() {
     if ((inb(0x64) & 1) == 0) {
         return;
@@ -422,17 +382,9 @@ void esegui_comando() {
     }
 }
 
-void inizializza_mouse() {
-    outb(0x64, 0xA8);
-    outb(0x64, 0xD4);
-    outb(0x60, 0xF4);
-}
-
-int pos_cursore;
-
 extern "C" void kernel_main() {
     inizializza_tabella();
-    inizializza_mouse();
+
     stampa_stringa("thats giorgio", 7);
     a_capo();
     stampa_stringa("giorgio> ", 7);
