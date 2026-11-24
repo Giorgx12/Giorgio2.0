@@ -297,6 +297,11 @@ void leggi_tastiera() {
     }
 }
 
+void inizializza_mouse() {
+    outb(0x64, 0xA8);
+    outb(0xD4, 0x64);
+}
+
 void stampa_stringa(const char* stringa, int colore) {
     while (*stringa) {
         disegna_lettera(grafica_x, grafica_y, colore, *stringa);
