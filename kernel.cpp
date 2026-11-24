@@ -297,16 +297,6 @@ void leggi_tastiera() {
     }
 }
 
-void leggi_mouse() {
-    unsigned char stato = inb(0x64);
-    if ((stato & 1) == 0) {
-        return;
-    }
-    if ((stato & 0x20) == 0) {
-        return;
-    }
-}
-
 void stampa_stringa(const char* stringa, int colore) {
     while (*stringa) {
         disegna_lettera(grafica_x, grafica_y, colore, *stringa);
